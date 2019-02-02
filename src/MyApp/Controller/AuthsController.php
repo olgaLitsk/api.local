@@ -8,7 +8,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class AuthsController
 {
-    // show the list of authors
     public function authorsGet(Application $app)
     {
         $sql = "SELECT * FROM authors";
@@ -20,7 +19,6 @@ class AuthsController
         return $app->json($post, 200);
     }
 
-    // show the author #id
     public function authorsIdGet(Application $app, $id)
     {
         $sql = "SELECT * FROM authors WHERE author_id = ?";
@@ -32,22 +30,18 @@ class AuthsController
         return $app->json($post,200);
     }
 
-    // create a new author, using POST method
     public function authorsPost(Application $app,Request $request)
     {
         $parametersAsArray = [];
         if ($content = $request->getContent()) {
             $parametersAsArray = json_decode($content, true);
         }
-
         $constraint = new Assert\Collection(array(
             'firstname' => new Assert\Type('string'),
             'lastname'  => new Assert\Type('string'),
             'about' => new Assert\Type('string'),
         ));
-
         $errors = $app['validator']->validate($parametersAsArray, $constraint);
-
         $errs_msg = [];
         if (count($errors) > 0) {
             foreach ($errors as $error) {
@@ -57,13 +51,12 @@ class AuthsController
         }else{
             $app['db']->insert('authors', $parametersAsArray);
             $lastInsertId = $app['db']->lastInsertId();
-            return $app->redirect('/authors/list/' . $lastInsertId, 201);
+            return $app->redirect('/authors/' . $lastInsertId, 201);
         }
     }
 
-    // update the author #id, using PUT method
     public function authorsIdPut(Application $app,Request $request, $id)
-    {//получился PATCH метод
+    {
         $parametersAsArray = [];
         if ($content = $request->getContent()) {
             $parametersAsArray = json_decode($content, true);
@@ -78,12 +71,10 @@ class AuthsController
         if (isset($parametersAsArray['about'])){
             $constraintArr['about'] = new Assert\Type('string');
         }
-
         $constraint = new Assert\Collection($constraintArr);
-
         $errors = $app['validator']->validate($parametersAsArray, $constraint);
-
         $errs_msg = [];
+
         if (count($errors) > 0) {
             foreach ($errors as $error) {
                 $errs_msg['errors'][$error->getPropertyPath()] = $error->getMessage();
@@ -92,12 +83,9 @@ class AuthsController
         }else{
             $app['db']->update('authors', $parametersAsArray, array('author_id' => $id));
         }
-
         return $app->json('Author updated',200);
-
     }
 
-    // delete the author #id, using DELETE method
     public function authorsIdDelete(Application $app, $id)
     {
         try {
@@ -117,7 +105,6 @@ class AuthsController
         return new Response('The author Deleted', 200);
     }
 
-    //вывод списка книг, принадлежащих автору с #id
     public function authorsIdBooksGet(Application $app, $id)
     {
         //list of books author #id
@@ -133,7 +120,6 @@ class AuthsController
         return $app->json($post, 200);
     }
 
-    //добавление новой книги автора с #id
     public function authorsIdBooksPost(Application $app, Request $request, $id)
     {
         $sql1 = "SELECT * FROM books WHERE title=?";

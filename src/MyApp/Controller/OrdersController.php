@@ -4,7 +4,8 @@ use Silex\Application;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints as Assert;
-class OrdersController{
+class OrdersController
+{
 
     // show the list of orders
     public function index(Application $app){//нужно ли join-ть с т покупателей
@@ -30,7 +31,7 @@ class OrdersController{
 
     // create a new order, using POST method
     public function create(Application $app,Request $request){
-        $parametersAsArray = [];
+        $parametersAsArray = array();
         if ($content = $request->getContent()) {
             $parametersAsArray = json_decode($content, true);
         }
@@ -42,7 +43,7 @@ class OrdersController{
 
         $errors = $app['validator']->validate($parametersAsArray, $constraint);
 
-        $errs_msg = [];
+        $errs_msg = array();
         if (count($errors) > 0) {
             foreach ($errors as $error) {
                 $errs_msg['errors'][$error->getPropertyPath()] = $error->getMessage();
@@ -53,18 +54,15 @@ class OrdersController{
             $lastInsertId = $app['db']->lastInsertId();
             return $app->redirect('/orders/list/' . $lastInsertId, 201);
         }
-
-
-
     }
 
     public function update(Application $app,Request $request, $id){
         // update the order #id, using PUT method
-        $parametersAsArray = [];
+        $parametersAsArray = array();
         if ($content = $request->getContent()) {
             $parametersAsArray = json_decode($content, true);
         }
-        $constraintArr = [];
+        $constraintArr = array();
         if (isset($parametersAsArray['orderdate'])) $constraintArr['orderdate'] = new Assert\Type('string');
         if (isset($parametersAsArray['customer'])) $constraintArr['customer'] = new Assert\Type('integer');
         if (isset($parametersAsArray['status'])) $constraintArr['status'] = new Assert\Type('string');
@@ -73,7 +71,7 @@ class OrdersController{
 
         $errors = $app['validator']->validate($parametersAsArray, $constraint);
 
-        $errs_msg = [];
+        $errs_msg = array();
         if (count($errors) > 0) {
             foreach ($errors as $error) {
                 $errs_msg['errors'][$error->getPropertyPath()] = $error->getMessage();

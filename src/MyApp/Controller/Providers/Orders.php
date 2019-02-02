@@ -16,7 +16,7 @@ class Orders implements ControllerProviderInterface
         $orders->delete("/{id}", "MyApp\Controller\OrdersController::destroy")->assert ('id ', '\d+ ');// delete the Order #id, using DELETE method +
 
         //книги принадлежащие заказу #id
-        $orders->get("/books/{id}", "MyApp\Controller\OrdersController::ordersBooksIdGet");//-
+        $orders->get("/books/{id}", "MyApp\Controller\OrdersController::ordersIdBooksGet");//-
 
         return $orders;
     }

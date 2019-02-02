@@ -8,8 +8,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class BooksController
 {
-    // show the list of books
-    public function index(Application $app)
+    public function booksGet(Application $app)
     {
         $sql = "SELECT * FROM books";
 //        $sql = "SELECT book_id, title, shortdescription, firstname, lastname, name FROM books as b
@@ -23,9 +22,8 @@ class BooksController
         return $app->json($post, 200);
     }
 
-    // show the book #id
-    public function show(Application $app, $id)
-    {//нужно ли join-ить таблицы, в качестве шв использовать число или slug
+    public function booksIdGet(Application $app, $id)
+    {
         $sql = "SELECT * FROM books WHERE book_id = ?";
         $post = $app['db']->fetchAssoc($sql, array((int) $id));
         if (!$post) {
@@ -35,38 +33,33 @@ class BooksController
         return $app->json($post,200);
     }
 
-    // create a new book, using POST method
-    /* public function create(Application $app,Request $request){//нет смылса создавать книгу без указания автора?
-         $parametersAsArray = [];
-         if ($content = $request->getContent()) {
-             $parametersAsArray = json_decode($content, true);
-         }
-         $constraint = new Assert\Collection(array(
-             'title' => new Assert\Type('string'),
-             'shortdescription'  => new Assert\Type('string'),
-             'price' => new Assert\Type('double'),
-             'author' => new Assert\Type('integer'),
-             'category' => new Assert\Type('integer'),
-         ));
+    public function booksPost(Application $app,Request $request)
+    {
+        $parametersAsArray = [];
+        if ($content = $request->getContent()) {
+            $parametersAsArray = json_decode($content, true);
+        }
+        $constraint = new Assert\Collection(array(
+            'title' => new Assert\Type('string'),
+            'shortdescription'  => new Assert\Type('string'),
+            'price' => new Assert\Type('double'),
+            'category' => new Assert\Type('integer'),
+        ));
+        $errors = $app['validator']->validate($parametersAsArray, $constraint);
+        $errs_msg = [];
+        if (count($errors) > 0) {
+            foreach ($errors as $error) {
+                $errs_msg['errors'][$error->getPropertyPath()] = $error->getMessage();
+            }
+            return $app->json($errs_msg,404);
+        }else{
+            $app['db']->insert('books', $parametersAsArray);
+            $lastInsertId = $app['db']->lastInsertId();
+            return $app->redirect('/books/' . $lastInsertId, 201);
+        }
+    }
 
-         $errors = $app['validator']->validate($parametersAsArray, $constraint);
-
-         $errs_msg = [];
-         if (count($errors) > 0) {
-             foreach ($errors as $error) {
-                 $errs_msg['errors'][$error->getPropertyPath()] = $error->getMessage();
-             }
-             return new Response(json_encode($errs_msg),404);
-         }else{
-             $app['db']->insert('books', $parametersAsArray);
-             $lastInsertId = $app['db']->lastInsertId();
-             $app['db']->insert('authors_books',array('book' => $lastInsertId, 'author' => $parametersAsArray['author']));
-             return $app->redirect('/books/list/' . $lastInsertId, 201);
-         }
-     }*/
-
-    // update the book #id, using PUT method
-    public function update(Application $app,Request $request, $id)
+    public function booksIdPut(Application $app,Request $request, $id)
     {
         $parametersAsArray = [];
         if ($content = $request->getContent()) {
@@ -88,7 +81,6 @@ class BooksController
         if (isset($parametersAsArray['category'])){
             $constraintArr['category'] = new Assert\Type('integer');
         }
-
         $constraint = new Assert\Collection($constraintArr);
 
         $errors = $app['validator']->validate($parametersAsArray, $constraint);
@@ -105,8 +97,7 @@ class BooksController
         return $app->json('book updated',200);
     }
 
-    // delete the book #id, using DELETE method
-    public function destroy(Application $app, $id)
+    public function booksIdDelete(Application $app, $id)
     {
         try {
             $sql = "SELECT * FROM books WHERE book_id = ?";
@@ -122,4 +113,39 @@ class BooksController
         }
         return new Response('Custormer Deleted', 200);
     }
+
+    // добавление книги, написанной несколькими авторами
+    public function create(Application $app,Request $request){
+        $parametersAsArray = [];
+        if ($content = $request->getContent()) {
+            $parametersAsArray = json_decode($content, true);
+        }
+        $constraint = new Assert\Collection(array(
+            'title' => new Assert\Type('string'),
+            'shortdescription'  => new Assert\Type('string'),
+            'price' => new Assert\Type('double'),
+            'author' => new Assert\NotBlank(),
+            'category' => new Assert\Type('integer'),
+        ));
+
+        $errors = $app['validator']->validate($parametersAsArray, $constraint);
+        $authors = $parametersAsArray["author"];
+        unset($parametersAsArray["author"]);
+
+        $errs_msg = [];
+        if (count($errors) > 0) {
+            foreach ($errors as $error) {
+                $errs_msg['errors'][$error->getPropertyPath()] = $error->getMessage();
+            }
+            return new Response(json_encode($errs_msg),404);
+        }else{
+            $app['db']->insert('books', $parametersAsArray);
+            $lastInsertId = $app['db']->lastInsertId();
+            foreach ($authors as $val){
+                $app['db']->insert('authors_books',array('book' => $lastInsertId, 'author' => $val));
+            }
+            return $app->redirect('/books/' . $lastInsertId, 201);
+        }
+    }
+
 }

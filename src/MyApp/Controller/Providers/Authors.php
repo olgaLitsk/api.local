@@ -9,20 +9,26 @@ class Authors implements ControllerProviderInterface
     public function connect(Application $app)
     {
         $authors = $app["controllers_factory"];
-        $authors->get("/", "MyApp\Controller\AuthsController::authorsGet");// show the list of authors
-        $authors->post("/", "MyApp\Controller\AuthsController::authorsPost");// create a new author, using POST method
-        $authors->get("/{id}", "MyApp\Controller\AuthsController::authorsIdGet")
-            ->assert ('id', '\d+');// show the author #id
-        $authors->put("/{id}", "MyApp\Controller\AuthsController::authorsIdPut")
-            ->assert ('id ', '\d+');// update the author #id, using PUT method +
-        $authors->delete("/{id}", "MyApp\Controller\AuthsController::authorsIdDelete")
-            ->assert ('id ', '\d+ ');// delete the author #id, using DELETE method +
+        $authors->get("/", "MyApp\Controller\AuthsController::authorsGet");    // вывод списка авторов
+        $authors->post("/", "MyApp\Controller\AuthsController::authorsPost");    // добавление нового автора
+        $authors
+            ->get("/{id}", "MyApp\Controller\AuthsController::authorsIdGet")    // вывод инф-ии об авторе
+            ->assert ('id', '\d+');
+        $authors
+            ->put("/{id}", "MyApp\Controller\AuthsController::authorsIdPut")    // обновление данных автора
+            ->assert ('id ', '\d+');
+        $authors
+            ->delete("/{id}", "MyApp\Controller\AuthsController::authorsIdDelete")    // удаление автора
+            ->assert ('id ', '\d+ ');
 
-        // книги, принадлежащих конкретному автору
-        $authors->get("/{id}/books","MyApp\Controller\AuthsController::authorsIdBooksGet")
+        // доп-но
+        $authors
+            ->get("/{id}/books","MyApp\Controller\AuthsController::authorsIdBooksGet")//вывод списка книг, принадлежащих автору с #id
             ->assert ('id ', '\d+ ');//+
-        $authors->post("/{id}/books","MyApp\Controller\AuthsController::authorsIdBooksPost")
-            ->assert ('id ', '\d+ ');//+
+        $authors
+            ->post("/{id}/books","MyApp\Controller\AuthsController::authorsIdBooksPost")//добавление новой книги автора с #id
+            ->assert ('id ', '\d+ ');
+
         return $authors;
     }
 
