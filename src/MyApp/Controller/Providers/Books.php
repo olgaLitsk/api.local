@@ -19,13 +19,14 @@ class Books implements ControllerProviderInterface
             ->assert ('id ', '\d+');
         $books
             ->delete("/{id}", "MyApp\Controller\BooksController::booksIdDelete")    // удаление книги
-            ->assert ('id ', '\d+ ');
+            ->assert ('id ', '\d+');
 
-        $books
-            ->post("/{id}", "MyApp\Controller\BooksController::create")// добавление книги, написанной несколькими авторами
-            ->assert ('id ', '\d+ ');
+        $books //перепроверить
+            ->post("/{id}", "MyApp\Controller\BooksController::create")// добавление книги, написанной несколькими авторами ???
+            ->assert ('id', '\d+');
         //добавление данных в промежуточную таблицу - authors_books
-        $books->post("/", "MyApp\Controller\BooksController::addMiddleData");
+        $books
+            ->post("/authors", "MyApp\Controller\BooksController::authorsBooksPost");
         return $books;
     }
 }

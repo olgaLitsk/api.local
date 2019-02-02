@@ -148,4 +148,33 @@ class BooksController
         }
     }
 
+    //добавление данных в промежуточную таблицу - authors_books
+    public function authorsBooksPost(Application $app,Request $request)
+    {
+        $parametersAsArray = [];
+        if ($content = $request->getContent()) {
+            $parametersAsArray = json_decode($content, true);
+        }
+        $constraint = new Assert\Collection(array(
+            'book' => new Assert\Type('integer'),
+            'author'  => new Assert\NotBlank(),
+        ));
+        $errors = $app['validator']->validate($parametersAsArray, $constraint);
+        $errs_msg = [];
+        if (count($errors) > 0) {
+            foreach ($errors as $error) {
+                $errs_msg['errors'][$error->getPropertyPath()] = $error->getMessage();
+            }
+            return $app->json($errs_msg,404);
+        }else{
+            $authors = $parametersAsArray["author"];
+            foreach ($authors as $val){
+                $app['db']->insert('authors_books',array('book' => $parametersAsArray['book'], 'author' => $val));
+                $lastInsertId = $app['db']->lastInsertId();
+            }
+
+            return $app->redirect('/authors/' . $lastInsertId, 201);
+        }
+    }
+
 }
