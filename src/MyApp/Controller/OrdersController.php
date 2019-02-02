@@ -6,9 +6,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints as Assert;
 class OrdersController
 {
-
-    // show the list of orders
-    public function index(Application $app){//нужно ли join-ть с т покупателей
+    public function ordersGet(Application $app){//нужно ли join-ть с т покупателей
         $sql = "SELECT * FROM orders";
         $post = $app['db']->fetchAll($sql);
         if (!$post) {
@@ -18,8 +16,7 @@ class OrdersController
         return $app->json($post, 200);
     }
 
-    // show the order #id
-    public function show(Application $app, $id){//нужно ли join-ть с т покупателей, книг
+    public function ordersIdGet(Application $app, $id){//нужно ли join-ть с т покупателей, книг
         $sql = "SELECT * FROM orders WHERE order_id = ?";
         $post = $app['db']->fetchAssoc($sql, array((int) $id));
         if (!$post) {
@@ -29,8 +26,7 @@ class OrdersController
         return $app->json($post,200);
     }
 
-    // create a new order, using POST method
-    public function create(Application $app,Request $request){
+    public function ordersPost(Application $app,Request $request){
         $parametersAsArray = array();
         if ($content = $request->getContent()) {
             $parametersAsArray = json_decode($content, true);
@@ -56,8 +52,7 @@ class OrdersController
         }
     }
 
-    public function update(Application $app,Request $request, $id){
-        // update the order #id, using PUT method
+    public function ordersPut(Application $app,Request $request, $id){
         $parametersAsArray = array();
         if ($content = $request->getContent()) {
             $parametersAsArray = json_decode($content, true);
@@ -80,13 +75,10 @@ class OrdersController
         }else{
             $app['db']->update('orders', $parametersAsArray, array('order_id' => $id));
         }
-
         return new Response('order updated',200);
-
     }
 
-    public function destroy(Application $app, $id){
-        // delete the order #id, using DELETE method
+    public function ordersDelete(Application $app, $id){
         try {
             $sql = "SELECT * FROM orders WHERE order_id = ?";
             $orderInfo = $app['db']->fetchAssoc($sql, array($id));
