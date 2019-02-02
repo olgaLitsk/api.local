@@ -10,4 +10,5 @@ $app->get('/', function() {
     return new Response('Welcome to my new Silex app');
 });
 
+
 return $app;

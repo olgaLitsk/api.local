@@ -7,3 +7,6 @@ $app['db.options'] = array(
     "port"       =>"5432",
     "password"   => "",
 );
+
+// debug
+$app['debug'] = true;
