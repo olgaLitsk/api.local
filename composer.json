@@ -1,0 +1,9 @@
+{
+    "require": {
+        "silex/silex": "^2.0",
+        "swiftmailer/swiftmailer": "^6.1",
+        "symfony/validator": "^3.4",
+        "symfony/security": "^3.4",
+        "doctrine/dbal": "~2.2"
+    }
+}
