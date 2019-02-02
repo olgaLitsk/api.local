@@ -1,12 +1,15 @@
 <?php
 namespace MyApp\Controller;
+
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints as Assert;
-class BooksController{
 
-    public function index(Application $app){
+class BooksController
+{
+    public function index(Application $app)
+    {
         // show the list of books
         $sql = "SELECT * FROM books";
 //        $sql = "SELECT book_id, title, shortdescription, firstname, lastname, name FROM books as b
