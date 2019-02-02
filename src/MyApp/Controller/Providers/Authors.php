@@ -1,5 +1,5 @@
 <?php
-namespace MyApp\Controller\Provider;
+namespace MyApp\Controller\Providers;
 
 use Silex\Application;
 use Silex\Api\ControllerProviderInterface;

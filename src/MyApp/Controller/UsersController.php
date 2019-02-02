@@ -4,9 +4,12 @@ use Silex\Application;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints as Assert;
-class UsersController{
 
-    public function index(Application $app){
+class UsersController
+{
+
+    public function index(Application $app)
+    {
         // show the list of users
         $sql = "SELECT * FROM customers";
         $post = $app['db']->fetchAll($sql);
@@ -17,7 +20,8 @@ class UsersController{
         return $app->json($post, 200);
     }
 
-    public function show(Application $app, $id){
+    public function show(Application $app, $id)
+    {
         // show the user #id
         $sql = "SELECT * FROM customers WHERE customer_id = ?";
         $post = $app['db']->fetchAssoc($sql, array((int) $id));

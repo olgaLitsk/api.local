@@ -1,8 +1,11 @@
 <?php
-namespace MyApp\Controller\Provider;
+namespace MyApp\Controller\Providers;
+
 use Silex\Application;
 use Silex\Api\ControllerProviderInterface;
-class Books implements ControllerProviderInterface{
+
+class Books implements ControllerProviderInterface
+{
     public function connect(Application $app)
     {
         $books = $app["controllers_factory"];
