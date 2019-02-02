@@ -1,24 +1,28 @@
 <?php
 namespace MyApp\Controller;
+
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints as Assert;
-class AuthsController{
 
+class AuthsController
+{
     // show the list of authors
-    public function authorsGet(Application $app){
+    public function authorsGet(Application $app)
+    {
         $sql = "SELECT * FROM authors";
         $post = $app['db']->fetchAll($sql);
         if (!$post) {
-            $error = array('message' => 'The author was not found.');
+            $error = array('message' => 'Authors are absent');
             return $app->json($error, 404);
         }
         return $app->json($post, 200);
     }
 
     // show the author #id
-    public function authorsIdGet(Application $app, $id){
+    public function authorsIdGet(Application $app, $id)
+    {
         $sql = "SELECT * FROM authors WHERE author_id = ?";
         $post = $app['db']->fetchAssoc($sql, array((int) $id));
         if (!$post) {
@@ -29,7 +33,8 @@ class AuthsController{
     }
 
     // create a new author, using POST method
-    public function authorsPut(Application $app,Request $request){
+    public function authorsPost(Application $app,Request $request)
+    {
         $parametersAsArray = [];
         if ($content = $request->getContent()) {
             $parametersAsArray = json_decode($content, true);
@@ -48,7 +53,7 @@ class AuthsController{
             foreach ($errors as $error) {
                 $errs_msg['errors'][$error->getPropertyPath()] = $error->getMessage();
             }
-            return new Response(json_encode($errs_msg),404);
+            return $app->json($errs_msg,404);
         }else{
             $app['db']->insert('authors', $parametersAsArray);
             $lastInsertId = $app['db']->lastInsertId();
@@ -57,15 +62,22 @@ class AuthsController{
     }
 
     // update the author #id, using PUT method
-    public function authorsIdPut(Application $app,Request $request, $id){//получился PATCH метод
+    public function authorsIdPut(Application $app,Request $request, $id)
+    {//получился PATCH метод
         $parametersAsArray = [];
         if ($content = $request->getContent()) {
             $parametersAsArray = json_decode($content, true);
         }
         $constraintArr = [];
-        if (isset($parametersAsArray['firstname'])) $constraintArr['firstname'] = new Assert\Type('string');
-        if (isset($parametersAsArray['lastname'])) $constraintArr['lastname'] = new Assert\Type('string');
-        if (isset($parametersAsArray['about'])) $constraintArr['about'] = new Assert\Type('string');
+        if (isset($parametersAsArray['firstname'])){
+            $constraintArr['firstname'] = new Assert\Type('string');
+        }
+        if (isset($parametersAsArray['lastname'])){
+            $constraintArr['lastname'] = new Assert\Type('string');
+        }
+        if (isset($parametersAsArray['about'])){
+            $constraintArr['about'] = new Assert\Type('string');
+        }
 
         $constraint = new Assert\Collection($constraintArr);
 
@@ -76,17 +88,18 @@ class AuthsController{
             foreach ($errors as $error) {
                 $errs_msg['errors'][$error->getPropertyPath()] = $error->getMessage();
             }
-            return new Response(json_encode($errs_msg),404);
+            return $app->json($errs_msg,404);
         }else{
             $app['db']->update('authors', $parametersAsArray, array('author_id' => $id));
         }
 
-        return new Response('Author updated',200);
+        return $app->json('Author updated',200);
 
     }
 
     // delete the author #id, using DELETE method
-    public function authorsIdDelete(Application $app, $id){
+    public function authorsIdDelete(Application $app, $id)
+    {
         try {
             $sql = "SELECT * FROM authors WHERE author_id = ?";
             $authorInfo = $app['db']->fetchAssoc($sql, array($id));
@@ -105,7 +118,8 @@ class AuthsController{
     }
 
     //вывод списка книг, принадлежащих автору с #id
-    public function authorsBooksIdGet(Application $app, $id){
+    public function authorsIdBooksGet(Application $app, $id)
+    {
         //list of books author #id
         $sql = "SELECT * FROM books as b
                 LEFT JOIN authors_books as ab ON b.book_id = ab.book
@@ -120,7 +134,8 @@ class AuthsController{
     }
 
     //добавление новой книги автора с #id
-    public function authorsBooksIdPost(Application $app, Request $request, $id){
+    public function authorsIdBooksPost(Application $app, Request $request, $id)
+    {
         $sql1 = "SELECT * FROM books WHERE title=?";
         $sql2 = "SELECT * FROM authors_books WHERE author =?";
 

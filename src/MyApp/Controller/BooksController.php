@@ -8,15 +8,14 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class BooksController
 {
+    // show the list of books
     public function index(Application $app)
     {
-        // show the list of books
         $sql = "SELECT * FROM books";
 //        $sql = "SELECT book_id, title, shortdescription, firstname, lastname, name FROM books as b
 //                LEFT JOIN authors as a ON b.category = a.author_id
 //                LEFT JOIN categories as c ON c.category_id = b.category";
         $post = $app['db']->fetchAll($sql);
-
         if (!$post) {
             $error = array('message' => 'The book was not found.');
             return $app->json($error, 404);
@@ -25,12 +24,9 @@ class BooksController
     }
 
     // show the book #id
-    public function show(Application $app, $id){//нужно ли join-ить таблицы, в качестве шв использовать число или slug
+    public function show(Application $app, $id)
+    {//нужно ли join-ить таблицы, в качестве шв использовать число или slug
         $sql = "SELECT * FROM books WHERE book_id = ?";
-//        $sql = "SELECT book_id, title, shortdescription, firstname, lastname, name FROM books as b
-//                LEFT JOIN authors as a ON b.category = a.author_id
-//                LEFT JOIN categories as c ON c.category_id = b.category
-//                WHERE book_id = ?";
         $post = $app['db']->fetchAssoc($sql, array((int) $id));
         if (!$post) {
             $error = array('message' => 'The book was not found.');
@@ -70,17 +66,28 @@ class BooksController
      }*/
 
     // update the book #id, using PUT method
-    public function update(Application $app,Request $request, $id){
+    public function update(Application $app,Request $request, $id)
+    {
         $parametersAsArray = [];
         if ($content = $request->getContent()) {
             $parametersAsArray = json_decode($content, true);
         }
         $constraintArr = [];
-        if (isset($parametersAsArray['title'])) $constraintArr['title'] = new Assert\Type('string');
-        if (isset($parametersAsArray['shortdescription'])) $constraintArr['shortdescription'] = new Assert\Type('string');
-        if (isset($parametersAsArray['price'])) $constraintArr['price'] = new Assert\Type('double');
-        if (isset($parametersAsArray['author'])) $constraintArr['author'] = new Assert\Type('integer');
-        if (isset($parametersAsArray['category'])) $constraintArr['category'] = new Assert\Type('integer');
+        if (isset($parametersAsArray['title'])){
+            $constraintArr['title'] = new Assert\Type('string');
+        }
+        if (isset($parametersAsArray['shortdescription'])){
+            $constraintArr['shortdescription'] = new Assert\Type('string');
+        }
+        if (isset($parametersAsArray['price'])){
+            $constraintArr['price'] = new Assert\Type('double');
+        }
+        if (isset($parametersAsArray['author'])){
+            $constraintArr['author'] = new Assert\Type('integer');
+        }
+        if (isset($parametersAsArray['category'])){
+            $constraintArr['category'] = new Assert\Type('integer');
+        }
 
         $constraint = new Assert\Collection($constraintArr);
 
@@ -91,16 +98,16 @@ class BooksController
             foreach ($errors as $error) {
                 $errs_msg['errors'][$error->getPropertyPath()] = $error->getMessage();
             }
-            return new Response(json_encode($errs_msg),404);
+            return $app->json($errs_msg,404);
         }else{
             $app['db']->update('books', $parametersAsArray, array('book_id' => $id));
         }
-
-        return new Response('book updated',200);
+        return $app->json('book updated',200);
     }
 
     // delete the book #id, using DELETE method
-    public function destroy(Application $app, $id){
+    public function destroy(Application $app, $id)
+    {
         try {
             $sql = "SELECT * FROM books WHERE book_id = ?";
             $bookInfo = $app['db']->fetchAssoc($sql, array($id));
