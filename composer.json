@@ -5,5 +5,10 @@
         "symfony/validator": "^3.4",
         "symfony/security": "^3.4",
         "doctrine/dbal": "~2.2"
+    },
+    "autoload" : {
+        "psr-4" : {
+            "MyApp\\" : "src/MyApp"
+        }
     }
 }
