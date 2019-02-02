@@ -11,11 +11,11 @@ class Users implements ControllerProviderInterface{
 //    $users->before(function(Application $app){
 //        // check for something here
 //    });
-        $users->get("/list", "MyApp\Controller\UsersController::index");// show the list of users +
-        $users->post("/list", "MyApp\Controller\UsersController::store");// create a new user, using POST method +
-        $users->get("/list/{id}", "MyApp\Controller\UsersController::show")->assert ('id', '\d+');// show the user #id +
-        $users->put("/list/{id}", "MyApp\Controller\UsersController::update")->assert ('id ', '\d+');// update the user #id, using PUT method +
-        $users->delete("/list/{id}", "MyApp\Controller\UsersController::destroy")->assert ('id ', '\d+ ');// delete the user #id, using DELETE method +
+        $users->get("/", "MyApp\Controller\UsersController::index");// show the list of users +
+        $users->post("/", "MyApp\Controller\UsersController::store");// create a new user, using POST method +
+        $users->get("/{id}", "MyApp\Controller\UsersController::show")->assert ('id', '\d+');// show the user #id +
+        $users->put("/{id}", "MyApp\Controller\UsersController::update")->assert ('id ', '\d+');// update the user #id, using PUT method +
+        $users->delete("/{id}", "MyApp\Controller\UsersController::destroy")->assert ('id ', '\d+ ');// delete the user #id, using DELETE method +
 
         //заказы клиента c #id
         $users->get("/{id}/orders","MyApp\Controller\UsersController::getCustomerOrders")->assert ('id ', '\d+ ');  //list of orders customer #id

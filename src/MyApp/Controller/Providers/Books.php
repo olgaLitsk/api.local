@@ -10,9 +10,9 @@ class Books implements ControllerProviderInterface
     {
         $books = $app["controllers_factory"];
 
-        $books->get("/list", "MyApp\Controller\BooksController::index");// show the list of books +
+        $books->get("/", "MyApp\Controller\BooksController::index");// show the list of books +
 
-        $books->post("/list", "MyApp\Controller\BooksController::create");// create a new book, using POST method +
+        $books->post("/", "MyApp\Controller\BooksController::create");// create a new book, using POST method +
 
         $books->get("/{id}", "MyApp\Controller\BooksController::show")->assert ('id', '\d+');// show the book #id +
 
