@@ -4,7 +4,7 @@ use Silex\Application;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints as Assert;
-class AuthorsController{
+class AuthsController{
 
     // show the list of authors
     public function authorsGet(Application $app){
@@ -106,7 +106,7 @@ class AuthorsController{
 
     //вывод списка книг, принадлежащих автору с #id
     public function authorsBooksIdGet(Application $app, $id){
-    //list of books author #id
+        //list of books author #id
         $sql = "SELECT * FROM books as b
                 LEFT JOIN authors_books as ab ON b.book_id = ab.book
                 LEFT JOIN authors as a ON a.author_id = ab.author
