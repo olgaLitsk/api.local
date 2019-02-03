@@ -10,8 +10,8 @@ class ComposerStaticInitc2a05a153ea5f9233a58816f49c0f622
         '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
         '023d27dca8066ef29e6739335ea73bad' => __DIR__ . '/..' . '/symfony/polyfill-php70/bootstrap.php',
         '320cde22f66dd4f5d3fd621d3e88b98f' => __DIR__ . '/..' . '/symfony/polyfill-ctype/bootstrap.php',
-        'bd9634f2d41831496de0d3dfe4c94881' => __DIR__ . '/..' . '/symfony/polyfill-php56/bootstrap.php',
         '2c102faa651ef8ea5874edb585946bce' => __DIR__ . '/..' . '/swiftmailer/swiftmailer/lib/swift_required.php',
+        'bd9634f2d41831496de0d3dfe4c94881' => __DIR__ . '/..' . '/symfony/polyfill-php56/bootstrap.php',
     );
 
     public static $prefixLengthsPsr4 = array (
@@ -42,6 +42,7 @@ class ComposerStaticInitc2a05a153ea5f9233a58816f49c0f622
         'M' => 
         array (
             'MyApp\\' => 6,
+            'Monolog\\' => 8,
         ),
         'E' => 
         array (
@@ -132,6 +133,10 @@ class ComposerStaticInitc2a05a153ea5f9233a58816f49c0f622
         'MyApp\\' => 
         array (
             0 => __DIR__ . '/../..' . '/src/MyApp',
+        ),
+        'Monolog\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/monolog/monolog/src/Monolog',
         ),
         'Egulias\\EmailValidator\\' => 
         array (

@@ -13,6 +13,10 @@ $app->register(new \Silex\Provider\DoctrineServiceProvider(), array(
 
 $app->register(new Silex\Provider\ValidatorServiceProvider());
 
+$app->register(new MonologServiceProvider, array(
+    'monolog.logfile' => __DIR__ . '/logs/app.log',
+));
+
 $app->mount("/users", new MyApp\Controller\Providers\Users());
 $app->mount("/books", new MyApp\Controller\Providers\Books());
 $app->mount("/orders", new MyApp\Controller\Providers\Orders());

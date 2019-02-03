@@ -4,7 +4,8 @@
         "swiftmailer/swiftmailer": "^6.1",
         "symfony/validator": "^3.4",
         "symfony/security": "^3.4",
-        "doctrine/dbal": "~2.2"
+        "doctrine/dbal": "~2.2",
+        "monolog/monolog": "^1.24"
     },
     "autoload" : {
         "psr-4" : {
