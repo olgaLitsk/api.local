@@ -1,4 +1,5 @@
 <?php
+
 namespace MyApp\Controller;
 
 use Silex\Application;
@@ -22,15 +23,15 @@ class AuthsController
     public function authorsIdGet(Application $app, $id)
     {
         $sql = "SELECT * FROM authors WHERE author_id = ?";
-        $post = $app['db']->fetchAssoc($sql, array((int) $id));
+        $post = $app['db']->fetchAssoc($sql, array((int)$id));
         if (!$post) {
             $error = array('message' => 'The author was not found.');
             return $app->json($error, 404);
         }
-        return $app->json($post,200);
+        return $app->json($post, 200);
     }
 
-    public function authorsPost(Application $app,Request $request)
+    public function authorsPost(Application $app, Request $request)
     {
         $parametersAsArray = [];
         if ($content = $request->getContent()) {
@@ -38,7 +39,7 @@ class AuthsController
         }
         $constraint = new Assert\Collection(array(
             'firstname' => new Assert\Type('string'),
-            'lastname'  => new Assert\Type('string'),
+            'lastname' => new Assert\Type('string'),
             'about' => new Assert\Type('string'),
         ));
         $errors = $app['validator']->validate($parametersAsArray, $constraint);
@@ -47,28 +48,28 @@ class AuthsController
             foreach ($errors as $error) {
                 $errs_msg['errors'][$error->getPropertyPath()] = $error->getMessage();
             }
-            return $app->json($errs_msg,404);
-        }else{
+            return $app->json($errs_msg, 404);
+        } else {
             $app['db']->insert('authors', $parametersAsArray);
             $lastInsertId = $app['db']->lastInsertId();
             return $app->redirect('/authors/' . $lastInsertId, 201);
         }
     }
 
-    public function authorsIdPut(Application $app,Request $request, $id)
+    public function authorsIdPut(Application $app, Request $request, $id)
     {
         $parametersAsArray = [];
         if ($content = $request->getContent()) {
             $parametersAsArray = json_decode($content, true);
         }
         $constraintArr = [];
-        if (isset($parametersAsArray['firstname'])){
+        if (isset($parametersAsArray['firstname'])) {
             $constraintArr['firstname'] = new Assert\Type('string');
         }
-        if (isset($parametersAsArray['lastname'])){
+        if (isset($parametersAsArray['lastname'])) {
             $constraintArr['lastname'] = new Assert\Type('string');
         }
-        if (isset($parametersAsArray['about'])){
+        if (isset($parametersAsArray['about'])) {
             $constraintArr['about'] = new Assert\Type('string');
         }
         $constraint = new Assert\Collection($constraintArr);
@@ -79,11 +80,11 @@ class AuthsController
             foreach ($errors as $error) {
                 $errs_msg['errors'][$error->getPropertyPath()] = $error->getMessage();
             }
-            return $app->json($errs_msg,404);
-        }else{
+            return $app->json($errs_msg, 404);
+        } else {
             $app['db']->update('authors', $parametersAsArray, array('author_id' => $id));
         }
-        return $app->json('Author updated',200);
+        return $app->json('Author updated', 200);
     }
 
     public function authorsIdDelete(Application $app, $id)
@@ -107,50 +108,16 @@ class AuthsController
 
     public function authorsIdBooksGet(Application $app, $id)
     {
-        //list of books author #id
+        //list of books author #id - фича
         $sql = "SELECT * FROM books as b
                 LEFT JOIN authors_books as ab ON b.book_id = ab.book
                 LEFT JOIN authors as a ON a.author_id = ab.author
                 WHERE author=?";
-        $post = $app['db']->fetchAll($sql, array((int) $id));
+        $post = $app['db']->fetchAll($sql, array((int)$id));
         if (!$post) {
             $error = array('message' => 'The books were not found.');
             return $app->json($error, 404);
         }
         return $app->json($post, 200);
     }
-
-    public function authorsIdBooksPost(Application $app, Request $request, $id)
-    {
-        $sql1 = "SELECT * FROM books WHERE title=?";
-        $sql2 = "SELECT * FROM authors_books WHERE author =?";
-
-        $parametersAsArray = [];
-        if ($content = $request->getContent()) {
-            $parametersAsArray = json_decode($content, true);
-        }
-        //делаем проверку на существование книги в таблице books
-        $checkBooks = $app['db']->fetchAssoc($sql1, array((string) $parametersAsArray['title']));
-        //если записи нет
-        if (!$checkBooks['book_id']){
-            //вставляем запись о новой книге в таблицу books
-            $app['db']->insert('books', $parametersAsArray);
-            //извлекаем id последней вставленной записи
-            $lastInsertId = $app['db']->lastInsertId();
-            //вставляем запись book_id, author_id в промежуточную таблицу authors_books
-            $app['db']->insert('authors_books', array('author' =>$id, 'book' => $lastInsertId));
-        }else{
-            //делаем проверку на существование author_id в таблице authors_books
-            $checkAuthors = $app['db']->fetchAssoc($sql2, array((string) $id));
-            if ($checkAuthors['author']){
-                return $app->json('The book of author has added', 200);
-            }
-            //вставляем запись book_id, author_id в промежуточную таблицу authors_books
-            $app['db']->insert('authors_books', array('author' =>$id, 'book' => $checkBooks['book_id']));
-        }
-        return new Response('The book added',200);
-    }
-
-
-
 }
