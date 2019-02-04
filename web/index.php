@@ -13,6 +13,18 @@ $app->register(new \Silex\Provider\DoctrineServiceProvider(), array(
 
 $app->register(new Silex\Provider\ValidatorServiceProvider());
 
+//
+//$app->register(new Silex\Provider\SecurityServiceProvider(), array(
+//    $app['security.firewalls'] = array(
+//        'unsecured' => array(
+//            'anonymous' => true,
+//э
+//            // ...
+//        )
+//    )
+//));
+
+
 
 $app->mount("/users", new MyApp\Controller\Providers\Users());
 $app->mount("/books", new MyApp\Controller\Providers\Books());
