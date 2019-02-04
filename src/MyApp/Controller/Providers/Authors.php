@@ -25,10 +25,6 @@ class Authors implements ControllerProviderInterface
         $authors
             ->get("/{id}/books","MyApp\Controller\AuthsController::authorsIdBooksGet")//вывод списка книг, принадлежащих автору с #id
             ->assert ('id ', '\d+ ');//+
-        $authors
-            ->post("/{id}/books","MyApp\Controller\AuthsController::authorsIdBooksPost")//добавление новой книги автора с #id
-            ->assert ('id ', '\d+ ');
-
         return $authors;
     }
 
