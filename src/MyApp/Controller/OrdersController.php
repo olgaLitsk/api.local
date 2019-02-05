@@ -4,10 +4,9 @@ use Silex\Application;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints as Assert;
-class OrdersController{
-
-    // show the list of orders
-    public function index(Application $app){//нужно ли join-ть с т покупателей
+class OrdersController
+{
+    public function ordersGet(Application $app){
         $sql = "SELECT * FROM orders";
         $post = $app['db']->fetchAll($sql);
         if (!$post) {
@@ -17,8 +16,7 @@ class OrdersController{
         return $app->json($post, 200);
     }
 
-    // show the order #id
-    public function show(Application $app, $id){//нужно ли join-ть с т покупателей, книг
+    public function ordersIdGet(Application $app, $id){//нужно ли join-ть с т покупателей, книг
         $sql = "SELECT * FROM orders WHERE order_id = ?";
         $post = $app['db']->fetchAssoc($sql, array((int) $id));
         if (!$post) {
@@ -28,9 +26,8 @@ class OrdersController{
         return $app->json($post,200);
     }
 
-    // create a new order, using POST method
-    public function create(Application $app,Request $request){
-        $parametersAsArray = [];
+    public function ordersPost(Application $app,Request $request){
+        $parametersAsArray = array();
         if ($content = $request->getContent()) {
             $parametersAsArray = json_decode($content, true);
         }
@@ -42,7 +39,7 @@ class OrdersController{
 
         $errors = $app['validator']->validate($parametersAsArray, $constraint);
 
-        $errs_msg = [];
+        $errs_msg = array();
         if (count($errors) > 0) {
             foreach ($errors as $error) {
                 $errs_msg['errors'][$error->getPropertyPath()] = $error->getMessage();
@@ -53,18 +50,14 @@ class OrdersController{
             $lastInsertId = $app['db']->lastInsertId();
             return $app->redirect('/orders/list/' . $lastInsertId, 201);
         }
-
-
-
     }
 
-    public function update(Application $app,Request $request, $id){
-        // update the order #id, using PUT method
-        $parametersAsArray = [];
+    public function ordersPut(Application $app,Request $request, $id){
+        $parametersAsArray = array();
         if ($content = $request->getContent()) {
             $parametersAsArray = json_decode($content, true);
         }
-        $constraintArr = [];
+        $constraintArr = array();
         if (isset($parametersAsArray['orderdate'])) $constraintArr['orderdate'] = new Assert\Type('string');
         if (isset($parametersAsArray['customer'])) $constraintArr['customer'] = new Assert\Type('integer');
         if (isset($parametersAsArray['status'])) $constraintArr['status'] = new Assert\Type('string');
@@ -73,7 +66,7 @@ class OrdersController{
 
         $errors = $app['validator']->validate($parametersAsArray, $constraint);
 
-        $errs_msg = [];
+        $errs_msg = array();
         if (count($errors) > 0) {
             foreach ($errors as $error) {
                 $errs_msg['errors'][$error->getPropertyPath()] = $error->getMessage();
@@ -82,13 +75,10 @@ class OrdersController{
         }else{
             $app['db']->update('orders', $parametersAsArray, array('order_id' => $id));
         }
-
         return new Response('order updated',200);
-
     }
 
-    public function destroy(Application $app, $id){
-        // delete the order #id, using DELETE method
+    public function ordersDelete(Application $app, $id){
         try {
             $sql = "SELECT * FROM orders WHERE order_id = ?";
             $orderInfo = $app['db']->fetchAssoc($sql, array($id));
