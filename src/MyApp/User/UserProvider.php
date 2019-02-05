@@ -41,11 +41,11 @@ class UserProvider implements UserProviderInterface
         return $class === 'Symfony\Component\Security\Core\User\User';
     }
 
-    public function getUser($user_login, $password)
-    {
-        $role = "ROLE_USER";
-        $user = new User($user_login, $password, explode(',', $role), true, true, true, true);
-        return $user;
-    }
+//    public function getUser($user_login, $password)
+//    {
+//        $role = "ROLE_USER";
+//        $user = new User($user_login, $password, explode(',', $role), true, true, true, true);
+//        return $user;
+//    }
 
 }
