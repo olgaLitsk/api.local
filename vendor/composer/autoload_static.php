@@ -39,11 +39,13 @@ class ComposerStaticInitc2a05a153ea5f9233a58816f49c0f622
         array (
             'Psr\\Log\\' => 8,
             'Psr\\Container\\' => 14,
+            'Providers\\' => 10,
         ),
         'M' => 
         array (
             'MyApp\\' => 6,
             'Monolog\\' => 8,
+            'Models\\' => 7,
         ),
         'E' => 
         array (
@@ -136,6 +138,10 @@ class ComposerStaticInitc2a05a153ea5f9233a58816f49c0f622
         array (
             0 => __DIR__ . '/..' . '/psr/container/src',
         ),
+        'Providers\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/src/MyApp',
+        ),
         'MyApp\\' => 
         array (
             0 => __DIR__ . '/../..' . '/src/MyApp',
@@ -143,6 +149,10 @@ class ComposerStaticInitc2a05a153ea5f9233a58816f49c0f622
         'Monolog\\' => 
         array (
             0 => __DIR__ . '/..' . '/monolog/monolog/src/Monolog',
+        ),
+        'Models\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/src/MyApp',
         ),
         'Egulias\\EmailValidator\\' => 
         array (
