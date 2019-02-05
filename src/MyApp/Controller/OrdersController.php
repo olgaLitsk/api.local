@@ -6,7 +6,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints as Assert;
 class OrdersController
 {
-    public function ordersGet(Application $app){//нужно ли join-ть с т покупателей
+    public function ordersGet(Application $app){
         $sql = "SELECT * FROM orders";
         $post = $app['db']->fetchAll($sql);
         if (!$post) {
