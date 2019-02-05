@@ -17,14 +17,14 @@ class UserProvider implements UserProviderInterface
         $this->conn = $conn;
     }
 
-    public function loadUserByUsername($username)
+    public function loadUserByUsername($user_login)
     {
-        $stmt = $this->conn->executeQuery('SELECT * FROM users WHERE username = ?', array(strtolower($username)));
+        $stmt = $this->conn->executeQuery('SELECT * FROM users WHERE user_login = ?', array(strtolower($user_login)));
         if (!$user = $stmt->fetch()) {
-            throw new UsernameNotFoundException(sprintf('Username "%s" does not exist.', $username));
+            throw new UsernameNotFoundException(sprintf('Username "%s" does not exist.', $user_login));
         }
 
-        return new User($user['username'], $user['password'], explode(',', $user['roles']), true, true, true, true);
+        return new User($user['user_login'], $user['user_password'], explode(',', $user['role']), true, true, true, true);
     }
 
     public function refreshUser(UserInterface $user)
@@ -41,10 +41,10 @@ class UserProvider implements UserProviderInterface
         return $class === 'Symfony\Component\Security\Core\User\User';
     }
 
-    public function getUser($username, $password)
+    public function getUser($user_login, $password)
     {
-        $roles = "ROLE_USER";
-        $user = new User($username, $password, explode(',', $roles), true, true, true, true);
+        $role = "ROLE_USER";
+        $user = new User($user_login, $password, explode(',', $role), true, true, true, true);
         return $user;
     }
 

@@ -13,22 +13,23 @@ $app->register(new \Silex\Provider\DoctrineServiceProvider(), array(
 
 $app->register(new Silex\Provider\ValidatorServiceProvider());
 
-$app->register(new Silex\Provider\MonologServiceProvider(), array(
-    'monolog.logfile' => __DIR__ . '/logs/app.log',
-));
+//$app->register(new Silex\Provider\MonologServiceProvider(), array(
+//    'monolog.logfile' => __DIR__ . '/logs/app.log',
+//));
 
-$app->register(new Silex\Provider\SecurityServiceProvider(), array(
-    $app['security.firewalls'] = array(
-        'secured' => array(
-            'anonymous' => true,
-
-            // ...
-        )
-    )
-));
-$app['security.access_rules'] = array(
-    array('^/users', 'ROLE_ADMIN'),
-);
+//$app->register(new Silex\Provider\SecurityServiceProvider(), array(
+//    $app['security.firewalls'] = array(
+//        'secure' => array(
+//            'anonymous' => true,
+//            'pattern' => '^/.*$',
+//            'users' => $app->share(function () { return new MyApp\User\UserProvider(); }),
+//
+//        )
+//    )
+//));
+//$app['security.access_rules'] = array(
+//    array('^/users', 'ROLE_USER'),
+//);
 
 //$app['security.firewalls'] = array(
 //    'secure' => array(
@@ -39,23 +40,30 @@ $app['security.access_rules'] = array(
 //        'users' => $app->share(function () { return new UserAuthUserProvider(); }),
 //    ),
 //);
-//Определение правил доступа
-//$app['security.access_rules'] = array(
-//    array('^/admin', 'ROLE_ADMIN'),
-//    array('^.*$', 'ROLE_USER'),
-//);
-//
-//$app->register(new Silex\Provider\SecurityServiceProvider(), array(
-//    $app['security.firewalls'] = array(
-//        'unsecured' => array(
-//            'anonymous' => true,
-//э
-//            // ...
-//        )
-//    )
-//));
 
-
+$app->register(new Silex\Provider\SecurityServiceProvider(), array(
+    'security.firewalls' => array(
+        'books' => array('pattern' => '^/books'), // Example of an url available as anonymous user
+        'default' => array(
+            'pattern' => '^.*$',
+            'anonymous' => true, // Needed as the login path is under the secured area
+//            'form' => array('login_path' => '/', 'check_path' => 'login_check'),
+//            'logout' => array('logout_path' => '/logout'), // url to call for logging out
+            'users' => function () use ($app) {
+                // Specific class App\User\UserProvider is described below
+                return new MyApp\User\UserProvider($app['db']);
+            }),
+        ),
+    'security.access_rules'=> array(
+        // You can rename ROLE_USER as you wish
+        array('^/.+$', 'ROLE_USER'),
+        array('^/admin', 'ROLE_ADMIN'),
+        array('^/books', ''), // This url is available as anonymous user
+    )
+));
+$app['phone.service'] = function() {
+    return new MyApp\Services\CheckPhoneService();
+};
 
 $app->mount("/users", new MyApp\Controller\Providers\Users());
 $app->mount("/books", new MyApp\Controller\Providers\Books());
