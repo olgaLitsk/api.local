@@ -19,6 +19,8 @@ class BooksController
         return $app->json($post, 200);
     }
 
+
+
     public function booksIdGet(Application $app, $id)
     {
         $sql = "SELECT * FROM books WHERE book_id = ?";

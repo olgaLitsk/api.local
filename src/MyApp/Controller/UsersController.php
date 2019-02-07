@@ -10,6 +10,7 @@ class UsersController
 {
     public function usersGet(Application $app)
     {
+
         $sql = "SELECT * FROM users";
         $post = $app['db']->fetchAll($sql);
         if (!$post) {
