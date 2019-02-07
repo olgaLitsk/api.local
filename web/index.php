@@ -11,13 +11,13 @@ $app->register(new \Silex\Provider\DoctrineServiceProvider(), array(
     'db.options' => $app['db.options']
 ));
 
-// DoctrineOrmService
-$app->register(
-    new Providers\DoctrineOrmServiceProvider(), array(
-    'orm.metadata' => "{$app['basepath']}/app/Models/ORM",
-    'orm.options' => $app['db.options']
-    )
-));
+//// DoctrineOrmService
+//$app->register(
+//    new Providers\DoctrineOrmServiceProvider(), array(
+//    'orm.metadata' => "{$app['basepath']}/app/Models/ORM",
+//    'orm.options' => $app['db.options']
+//    )
+//));
 
 $app->register(new Silex\Provider\ValidatorServiceProvider());
 
