@@ -1,6 +1,6 @@
 <?php
 
-namespace Models;
+namespace MyApp\Models;
 
 use Silex\Application;
 

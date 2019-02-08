@@ -2,6 +2,8 @@
 // /web/index.php
 $app = require_once __DIR__.'/../app/app.php';
 require __DIR__ . '/../app/config/prod.php';
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Tools\Setup;
 //Services
 $app->register(new \Silex\Provider\TwigServiceProvider(), array(
     'twig.path' => __DIR__ . '/../resources/views'
@@ -11,15 +13,26 @@ $app->register(new \Silex\Provider\DoctrineServiceProvider(), array(
     'db.options' => $app['db.options']
 ));
 
-//// DoctrineOrmService
-//$app->register(
-//    new Providers\DoctrineOrmServiceProvider(), array(
-//    'orm.metadata' => "{$app['basepath']}/app/Models/ORM",
-//    'orm.options' => $app['db.options']
-//    )
-//));
-
 $app->register(new Silex\Provider\ValidatorServiceProvider());
+
+$app['phone.service'] = function() {
+    return new MyApp\Services\CheckPhoneService();
+};
+//$app['em'] = EntityManager::create($conn, $config);
+$app['em'] = $app->share(function ($app) {
+
+    // Create a simple "default" Doctrine ORM configuration for Annotations
+    $isDevMode = true;
+    $config = Setup::createAnnotationMetadataConfiguration(array($app['orm.metadata']), $isDevMode);
+
+    // Obtaining the entity manager
+    return EntityManager::create($app['orm.options'], $config);
+});
+$app->mount("/users", new MyApp\Controller\Providers\Users());
+$app->mount("/books", new MyApp\Controller\Providers\Books());
+$app->mount("/orders", new MyApp\Controller\Providers\Orders());
+//$app->mount("/authors", new MyApp\Controller\Providers\Authors());
+$app->mount("/authors", new \MyApp\Controllers\AuthorsController());
 
 $app->register(new Silex\Provider\SecurityServiceProvider());
 $app['security.firewalls'] = array(
@@ -34,19 +47,5 @@ $app['security.firewalls'] = array(
 //            return new MyApp\User\UserProvider($app['db']);
 //        },
     ),
-//    'administrative'=> array(
-//      'pattern'=>
-//    );
 );
-
-
-$app['phone.service'] = function() {
-    return new MyApp\Services\CheckPhoneService();
-};
-
-$app->mount("/users", new MyApp\Controller\Providers\Users());
-$app->mount("/books", new MyApp\Controller\Providers\Books());
-$app->mount("/orders", new MyApp\Controller\Providers\Orders());
-$app->mount("/authors", new MyApp\Controller\Providers\Authors());
-
 $app->run();

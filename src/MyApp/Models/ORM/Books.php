@@ -1,5 +1,5 @@
 <?php
-namespace Models\ORM;
+namespace MyApp\Models\ORM;
 
 class Books
 {
@@ -34,6 +34,14 @@ class Books
     }
 
     /**
+     * Get title
+     *
+     * @return string
+     */
+    public function getTitle() {
+        return $this->title;
+    }
+    /**
      * Set title
      *
      * @param string $title
@@ -44,11 +52,6 @@ class Books
         $this->title = $title;
     }
 
-    /**
-     * Get title
-     *
-     * @return string
-     */
     public function getShortdescription() {
         return $this->shortdescription;
     }
