@@ -8,10 +8,31 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class BooksController
 {
-    public function booksGet(Application $app)
+    public function booksGet(Application $app, $book_id = null)
     {
-        $sql = "SELECT * FROM books";
-        $post = $app['db']->fetchAll($sql);
+//        $sql = "SELECT * FROM books";
+//        $post = $app['db']->fetchAll($sql);
+//        if (!$post) {
+//            $error = array('message' => 'The book was not found.');
+//            return $app->json($error, 404);
+//        }
+//        return $app->json($post, 200);
+        $models = $app['models'];
+        try {
+            // Initialization
+            if ($book_id) {
+                $data = $models->load('Books', 'booksGet', $book_id);
+            }
+            return $app->json($data, 404);
+        } catch (\Exception $e) {
+            return $app->json($e->getMessage());
+        }
+    }
+
+    public function booksIdGet(Application $app, $id)
+    {
+        $sql = "SELECT * FROM books WHERE book_id = ?";
+        $post = $app['db']->fetchAssoc($sql, array((int)$id));
         if (!$post) {
             $error = array('message' => 'The book was not found.');
             return $app->json($error, 404);
@@ -19,20 +40,7 @@ class BooksController
         return $app->json($post, 200);
     }
 
-
-
-    public function booksIdGet(Application $app, $id)
-    {
-        $sql = "SELECT * FROM books WHERE book_id = ?";
-        $post = $app['db']->fetchAssoc($sql, array((int) $id));
-        if (!$post) {
-            $error = array('message' => 'The book was not found.');
-            return $app->json($error, 404);
-        }
-        return $app->json($post,200);
-    }
-
-    public function booksPost(Application $app,Request $request)
+    public function booksPost(Application $app, Request $request)
     {
         $parametersAsArray = [];
         if ($content = $request->getContent()) {
@@ -40,7 +48,7 @@ class BooksController
         }
         $constraint = new Assert\Collection(array(
             'title' => new Assert\Type('string'),
-            'shortdescription'  => new Assert\Type('string'),
+            'shortdescription' => new Assert\Type('string'),
             'price' => new Assert\Type('double'),
             'category' => new Assert\Type('integer'),
         ));
@@ -50,34 +58,34 @@ class BooksController
             foreach ($errors as $error) {
                 $errs_msg['errors'][$error->getPropertyPath()] = $error->getMessage();
             }
-            return $app->json($errs_msg,404);
-        }else{
+            return $app->json($errs_msg, 404);
+        } else {
             $app['db']->insert('books', $parametersAsArray);
             $lastInsertId = $app['db']->lastInsertId();
             return $app->redirect('/books/' . $lastInsertId, 201);
         }
     }
 
-    public function booksIdPut(Application $app,Request $request, $id)
+    public function booksIdPut(Application $app, Request $request, $id)
     {
         $parametersAsArray = [];
         if ($content = $request->getContent()) {
             $parametersAsArray = json_decode($content, true);
         }
         $constraintArr = [];
-        if (isset($parametersAsArray['title'])){
+        if (isset($parametersAsArray['title'])) {
             $constraintArr['title'] = new Assert\Type('string');
         }
-        if (isset($parametersAsArray['shortdescription'])){
+        if (isset($parametersAsArray['shortdescription'])) {
             $constraintArr['shortdescription'] = new Assert\Type('string');
         }
-        if (isset($parametersAsArray['price'])){
+        if (isset($parametersAsArray['price'])) {
             $constraintArr['price'] = new Assert\Type('double');
         }
-        if (isset($parametersAsArray['author'])){
+        if (isset($parametersAsArray['author'])) {
             $constraintArr['author'] = new Assert\Type('integer');
         }
-        if (isset($parametersAsArray['category'])){
+        if (isset($parametersAsArray['category'])) {
             $constraintArr['category'] = new Assert\Type('integer');
         }
         $constraint = new Assert\Collection($constraintArr);
@@ -89,11 +97,11 @@ class BooksController
             foreach ($errors as $error) {
                 $errs_msg['errors'][$error->getPropertyPath()] = $error->getMessage();
             }
-            return $app->json($errs_msg,404);
-        }else{
+            return $app->json($errs_msg, 404);
+        } else {
             $app['db']->update('books', $parametersAsArray, array('book_id' => $id));
         }
-        return $app->json('book updated',200);
+        return $app->json('book updated', 200);
     }
 
     public function booksIdDelete(Application $app, $id)
@@ -114,14 +122,15 @@ class BooksController
     }
 
     // добавление книги, написанной несколькими авторами
-    public function create(Application $app,Request $request){
+    public function create(Application $app, Request $request)
+    {
         $parametersAsArray = [];
         if ($content = $request->getContent()) {
             $parametersAsArray = json_decode($content, true);
         }
         $constraint = new Assert\Collection(array(
             'title' => new Assert\Type('string'),
-            'shortdescription'  => new Assert\Type('string'),
+            'shortdescription' => new Assert\Type('string'),
             'price' => new Assert\Type('double'),
             'author' => new Assert\NotBlank(),
             'category' => new Assert\Type('integer'),
@@ -136,12 +145,12 @@ class BooksController
             foreach ($errors as $error) {
                 $errs_msg['errors'][$error->getPropertyPath()] = $error->getMessage();
             }
-            return new Response(json_encode($errs_msg),404);
-        }else{
+            return new Response(json_encode($errs_msg), 404);
+        } else {
             $app['db']->insert('books', $parametersAsArray);
             $lastInsertId = $app['db']->lastInsertId();
-            foreach ($authors as $val){
-                $app['db']->insert('authors_books',array('book' => $lastInsertId, 'author' => $val));
+            foreach ($authors as $val) {
+                $app['db']->insert('authors_books', array('book' => $lastInsertId, 'author' => $val));
             }
             return $app->redirect('/books/' . $lastInsertId, 201);
         }

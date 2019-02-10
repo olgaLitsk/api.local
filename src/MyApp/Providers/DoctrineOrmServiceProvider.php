@@ -1,42 +1,34 @@
 <?php
+namespace MyApp\Providers;
 
-// app/Providers/DoctrineOrmServiceProvider.php
-
-namespace Providers;
-
-use Silex\Application;
-use Pimple\ServiceProviderInterface;
 use Doctrine\ORM\Tools\Setup;
 use Doctrine\ORM\EntityManager;
+use Pimple\Container;
+use Pimple\ServiceProviderInterface;
 
-/**
- * Class - DoctrineOrmServiceProvider
- * Setup Doctrine ORM
- *
- * @category Provider
- * @package  app\Providers
- * @author   Sergei Beskorovainyi <bsa2657@yandex.ru>
- * @license  MIT <http://www.opensource.org/licenses/mit-license.php>
- * @link     https://github.com/bsa-git/silex-mvc/
- *
- */
-class DoctrineOrmServiceProvider implements ServiceProviderInterface {
-
-    public function register(Application $app) {
-
-        $app['em'] = $app->share(function ($app) {
-
-            // Create a simple "default" Doctrine ORM configuration for Annotations
+class DoctrineOrmServiceProvider implements ServiceProviderInterface
+{
+    public function register(Container $app)
+    {
+        $app['em'] = function () {
+            $app['db.options'] = array(
+                "driver" => "pdo_pgsql",
+                "host" => "localhost",
+                "dbname" => "postgres",
+                "user" => "postgres",
+                "port" => "5432",
+                "password" => "",
+            );
             $isDevMode = true;
-            $config = Setup::createAnnotationMetadataConfiguration(array($app['orm.metadata']), $isDevMode);
-
-            // Obtaining the entity manager
-            return EntityManager::create($app['orm.options'], $config);
-        });
+            $isSimpleMode = FALSE;
+            $proxyDir = null;
+            $cache = null;
+            $config = Setup::createAnnotationMetadataConfiguration(
+                array("/src/MyApp/Models/ORM"), $isDevMode, $proxyDir, $cache, $isSimpleMode
+            );
+            return EntityManager::create($app['db.options'], $config);
+        };
     }
-
-    public function boot(Application $app) {
-
-    }
-
 }
+
+

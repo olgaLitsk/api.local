@@ -1,26 +1,31 @@
 <?php
 namespace MyApp\Models\ORM;
 
+use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
 use Symfony\Component\Validator\Constraints as Assert;
 
-class Authors
+/**
+ * Author
+ *
+ * @ORM\Table(name="authors")
+ * @ORM\Entity
+ */
+class Author
 {
     /**
+     * @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue
      * @var int
      */
-//    private $author_id;
-    /**
-     * @var string
-     */
+    private $author_id;
+
+    /** @ORM\Column(type="string") **/
     private $firstname;
-    /**
-     * @var string
-     */
+
+    /** @ORM\Column(type="string") **/
     private $lastname;
-    /**
-     * @var string
-     */
+
+    /** @ORM\Column(type="text") **/
     private $about;
 
     static public function loadValidatorMetadata(ClassMetadata $metadata) {
@@ -28,9 +33,7 @@ class Authors
         $metadata->addPropertyConstraint('lastname', new Assert\NotBlank());
         $metadata->addPropertyConstraint('about', new Assert\Length(array('min' => 5)));
     }
-    /**
-     * @ORM\Entity @ORM\Table(name="products")
-     **/
+
     /**
      * Get author_id
      *
@@ -40,21 +43,10 @@ class Authors
         return $this->author_id;
     }
 
-    /**
-     * Get title
-     *
-     * @return string
-     */
     public function getFirstname() {
         return $this->firstname;
     }
-    /**
-     * Set title
-     *
-     * @param string $firstname
-     *
-     * @return string
-     */
+
     public function setFirstname($firstname) {
         $this->firstname = $firstname;
     }
@@ -74,5 +66,7 @@ class Authors
     public function setAbout($about) {
         $this->about = $about;
     }
+
+
 
 }

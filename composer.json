@@ -10,7 +10,9 @@
     },
     "autoload" : {
         "psr-4" : {
-            "MyApp\\" : "src/MyApp"
+            "MyApp\\" : "src/MyApp",
+            "Providers\\" : "src/MyApp"
+
         }
     }
 }
