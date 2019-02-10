@@ -19,16 +19,17 @@ class Author
      */
     private $author_id;
 
-    /** @ORM\Column(type="string") **/
+    /** @ORM\Column(type="string") * */
     private $firstname;
 
-    /** @ORM\Column(type="string") **/
+    /** @ORM\Column(type="string") * */
     private $lastname;
 
-    /** @ORM\Column(type="text") **/
+    /** @ORM\Column(type="text") * */
     private $about;
 
-    static public function loadValidatorMetadata(ClassMetadata $metadata) {
+    static public function loadValidatorMetadata(ClassMetadata $metadata)
+    {
         $metadata->addPropertyConstraint('firstname', new Assert\NotBlank());
         $metadata->addPropertyConstraint('lastname', new Assert\NotBlank());
         $metadata->addPropertyConstraint('about', new Assert\Length(array('min' => 5)));
@@ -39,34 +40,38 @@ class Author
      *
      * @return integer
      */
-    public function getAuthorId() {
+    public function getAuthorId()
+    {
         return $this->author_id;
     }
 
-    public function getFirstname() {
+    public function getFirstname()
+    {
         return $this->firstname;
     }
 
-    public function setFirstname($firstname) {
+    public function setFirstname($firstname)
+    {
         $this->firstname = $firstname;
     }
 
-    public function getLastname() {
+    public function getLastname()
+    {
         return $this->lastname;
     }
 
-    public function setLastname($lastname) {
+    public function setLastname($lastname)
+    {
         $this->lastname = $lastname;
     }
 
-    public function getAbout() {
+    public function getAbout()
+    {
         return $this->about;
     }
 
-    public function setAbout($about) {
+    public function setAbout($about)
+    {
         $this->about = $about;
     }
-
-
-
 }

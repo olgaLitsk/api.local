@@ -7,37 +7,31 @@ require __DIR__ . '/../app/config/prod.php';
 $app->register(new \Silex\Provider\TwigServiceProvider(), array(
     'twig.path' => __DIR__ . '/../resources/views'
 ));
+
 $app->register(new \Silex\Provider\DoctrineServiceProvider(), array(
     'db.options' => $app['db.options']
 ));
+
 $app->register(new Silex\Provider\ValidatorServiceProvider());
+
 $app['phone.service'] = function () {
     return new MyApp\Services\CheckPhoneService();
 };
+
 $app->register(new MyApp\Providers\DoctrineOrmServiceProvider(), array(
     'db.options' => $app['db.options']
 ));
-//$app['em'] = function () {
-//    return new MyApp\Providers\DoctrineOrmServiceProvider();
-//};
-//var_dump($app['em']);
-//$app['em'] = EntityManager::create($conn, $config);
-//$app['em'] = $app->share(function ($app) {
-//    // Create a simple "default" Doctrine ORM configuration for Annotations
-//    $isDevMode = true;
-//    $config = Setup::createAnnotationMetadataConfiguration(array($app['orm.metadata']), $isDevMode);
-//    // Obtaining the entity manager
-//    return EntityManager::create($app['orm.options'], $config);
-//});
-$app->mount("/users", new MyApp\Controller\Providers\Users());
+
+//$app->mount("/users", new MyApp\Controller\Providers\Users());
 //$app->mount("/books", new MyApp\Controller\Providers\Books());
-$app->mount("/orders", new MyApp\Controller\Providers\Orders());
+//$app->mount("/orders", new MyApp\Controller\Providers\Orders());
 //$app->mount("/authors", new MyApp\Controller\Providers\Authors());
 
 
 $app->mount("/authors", new \MyApp\Controllers\AuthorsController());
 $app->mount("/books", new \MyApp\Controllers\BooksController());
-
+$app->mount("/users", new \MyApp\Controllers\UsersController());
+$app->mount("/orders", new \MyApp\Controllers\OrdersController());
 //$app->register(new Silex\Provider\SecurityServiceProvider());
 //$app['security.firewalls'] = array(
 //    'anonumous' => array(

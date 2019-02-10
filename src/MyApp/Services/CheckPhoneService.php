@@ -6,7 +6,7 @@ class CheckPhoneService
 {
     public function CurlPhoneValidation($phone){
         // set API Access Key -9903d695c5953b3b26aa028e9f853912
-        $access_key = '9903d695c5953b3b26aa028e9f853911';
+        $access_key = '9903d695c5953b3b26aa028e9f853912';
 
         // Initialize CURL:
         $ch = curl_init('http://apilayer.net/api/validate?access_key='.$access_key.'&number='.$phone.'');

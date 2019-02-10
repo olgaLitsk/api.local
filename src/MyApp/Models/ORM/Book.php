@@ -34,9 +34,7 @@ class Book
      * @ORM\ManyToOne(targetEntity="Category", inversedBy="books")
      * @ORM\JoinColumn(name="category", nullable=false, referencedColumnName="category_id")
      */
-
     private $category;
-
 
     /**
      * Many Book have Many Authors.

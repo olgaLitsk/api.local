@@ -107,46 +107,39 @@ class BooksController implements ControllerProviderInterface
 
     public function updateAction(Application $app, Request $request, $id)
     {
-//        try {
+        try {
+        $content = json_decode($request->getContent(), true);
 
-            $content = json_decode($request->getContent(), true);
-            $category = $app['em']->getRepository('MyApp\Models\ORM\Category')
-                ->findOneByName($content['category']);
+        $book = $app['em']->getRepository('MyApp\Models\ORM\Book')
+            ->find($id);
+        $bookCategory = $book->getCategory()->getCategoryId();
 
+        $category = $app['em']->getRepository('MyApp\Models\ORM\Category')
+            ->find($bookCategory);
 
-            $book = $app['em']->getRepository('MyApp\Models\ORM\Book')
-                ->find($id);
-            $book->setTitle($content['title']);
-            $book->setShortdescription($content['shortdescription']);
-            $book->setPrice($content['price']);
+        $category->setName($content['category']);
+        $book->setTitle($content['title']);
+        $book->setShortdescription($content['shortdescription']);
+        $book->setPrice($content['price']);
 
-            $book->setCategory($category);
-        $category->addBook($book);
-var_dump($book);
-//            $book = new Book();
-//            $book->setTitle($content['title']);
-//            $book->setShortdescription($content['shortdescription']);
-//            $book->setPrice($content['price']);
-//            $book->setCategory($category);
-//var_dump($book);return;
-            $errors = $app['validator']->validate($book);
+        $errors = $app['validator']->validate($book);//не работает валидация
 
-            $errs_msg = [];
-            if (count($errors) > 0) {
-                foreach ($errors as $error) {
-                    $errs_msg['errors'][$error->getPropertyPath()] = $error->getMessage();
-                }
-                return $app->json($errs_msg, 404);
-
-            } else {
-                $app['em']->flush();
-
-                $book_id = $book->getBookId();
-                return $app->redirect('/books/' . $book_id, 201);
+        $errs_msg = [];
+        if (count($errors) > 0) {
+            foreach ($errors as $error) {
+                $errs_msg['errors'][$error->getPropertyPath()] = $error->getMessage();
             }
-//        } catch (\Exception $e) {
-//            return $app->json($e, 404);
-//        }
+            return $app->json($errs_msg, 404);
+
+        } else {
+            $app['em']->flush();
+
+            $book_id = $book->getBookId();
+            return $app->redirect('/books/' . $book_id, 201);
+        }
+        } catch (\Exception $e) {
+            return $app->json($e, 404);
+        }
     }
 
     public function deleteAction(Application $app, $id)
@@ -158,6 +151,12 @@ var_dump($book);
                 $error = array('message' => 'Not found book id ' . $id);
                 return $app->json($error, 404);
             }
+
+            $bookCategory = $book->getCategory()->getCategoryId();
+            $category = $app['em']->getRepository('MyApp\Models\ORM\Category')
+                ->find($bookCategory);
+
+            $app['em']->remove($category);
             $app['em']->remove($book);
             $app['em']->flush();
             return $app->json(array('message' => 'The book id ' . $id . ' deleted'), 200);

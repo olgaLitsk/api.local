@@ -24,9 +24,9 @@ class Category
 
     /** @ORM\Column(type="string") * */
     private $name;
-//,orphanRemoval=true
+
     /**
-     * @ORM\OneToMany(targetEntity="Book", mappedBy="category")
+     * @ORM\OneToMany(targetEntity="Book", mappedBy="category",orphanRemoval=true)
      */
     private $books;
 
