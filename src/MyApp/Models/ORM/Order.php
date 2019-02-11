@@ -26,20 +26,34 @@ class Order
      * @ORM\JoinColumn(name="`user`", nullable=false, referencedColumnName="user_id")
      */
     private $user;
-
+//
+//    /**
+//     * Many Book have Many Orders.
+//     * @ORM\ManyToMany(targetEntity="User")
+//     * @ORM\JoinTable(name="books_orders",
+//     *      joinColumns={@ORM\JoinColumn(name="order", referencedColumnName="order_id")},
+//     *      inverseJoinColumns={@ORM\JoinColumn(name="`user`", referencedColumnName="user_id", unique=true)}
+//     *      )
+//     */
+//    private $users;//проверить не надо ли заменить на ордер
+//
+//    public function __construct()
+//    {
+//        $this->users = new ArrayCollection();
+//    }
     /**
      * Many Book have Many Orders.
-     * @ORM\ManyToMany(targetEntity="User")
+     * @ORM\ManyToMany(targetEntity="Book")
      * @ORM\JoinTable(name="books_orders",
      *      joinColumns={@ORM\JoinColumn(name="order", referencedColumnName="order_id")},
-     *      inverseJoinColumns={@ORM\JoinColumn(name="`user`", referencedColumnName="user_id", unique=true)}
+     *      inverseJoinColumns={@ORM\JoinColumn(name="`book`", referencedColumnName="book_id", unique=true)}
      *      )
      */
-    private $users;//проверить не надо ли заменить на ордер
+    private $books;//проверить не надо ли заменить на ордер
 
     public function __construct()
     {
-        $this->users = new ArrayCollection();
+        $this->books = new ArrayCollection();
     }
 
 
