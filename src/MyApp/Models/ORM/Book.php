@@ -51,11 +51,16 @@ class Book
         $this->authors = new ArrayCollection();
     }
 
-//    public function addAuthor(Author $author)
-//    {
-//        $author->addBook($this); // synchronously updating inverse side
-//        $this->authors[] = $author;
-//    }
+    public function addAuthor(Author $author)
+    {
+        $author->addBook($this); // synchronously updating inverse side
+        $this->authors[] = $author;
+    }
+
+    public function addOrder(Order $order)
+    {
+        $this->orders[] = $order;
+    }
 
     static public function loadValidatorMetadata(ClassMetadata $metadata)
     {

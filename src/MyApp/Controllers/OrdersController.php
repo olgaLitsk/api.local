@@ -66,29 +66,59 @@ class OrdersController implements ControllerProviderInterface
     }
 
     public function ordersPost(Application $app,Request $request){
-        $parametersAsArray = array();
-        if ($content = $request->getContent()) {
-            $parametersAsArray = json_decode($content, true);
+        $content = json_decode($request->getContent(), true);
+
+        $order = new Order();
+        $order->setOrderdate($content['orderdate']);
+        $order->setStatus($content['status']);
+        $order->setUser($content['user']);
+//        dump($content['books']);
+
+        foreach ($content['books'] as $val) {
+            if (!$app['em']->getRepository('MyApp\Models\ORM\Book')->find($val)) {
+                return $app->json(array('message' => 'Not found book id'.$val));
+            }
+            $order->addBook($app['em']->getRepository('MyApp\Models\ORM\Book')->find($val));
         }
-        $constraint = new Assert\Collection(array(
-            'orderdate' => new Assert\Type('string'),
-            'customer'  => new Assert\Type('integer'),
-            'status' => new Assert\Type('string'),
-        ));
 
-        $errors = $app['validator']->validate($parametersAsArray, $constraint);
+//        return;
 
-        $errs_msg = array();
+        $errors = $app['validator']->validate($order);
+        $errs_msg = [];
         if (count($errors) > 0) {
             foreach ($errors as $error) {
                 $errs_msg['errors'][$error->getPropertyPath()] = $error->getMessage();
             }
-            return new Response(json_encode($errs_msg),404);
-        }else{
-            $app['db']->insert('orders', $parametersAsArray);
-            $lastInsertId = $app['db']->lastInsertId();
-            return $app->redirect('/orders/list/' . $lastInsertId, 201);
+            return $app->json($errs_msg, 404);
+        } else {
+            $app['em']->persist($order);
+            $app['em']->flush();
+            $order_id = $order->getOrderId();
+            return $app->redirect('/orders/' . $order_id, 201);
         }
+//        $parametersAsArray = array();
+//        if ($content = $request->getContent()) {
+//            $parametersAsArray = json_decode($content, true);
+//        }
+//        $constraint = new Assert\Collection(array(
+//            'orderdate' => new Assert\Type('string'),
+//            'customer'  => new Assert\Type('integer'),
+//            'status' => new Assert\Type('string'),
+//        ));
+//
+//        $errors = $app['validator']->validate($parametersAsArray, $constraint);
+//
+//        $errs_msg = array();
+//        if (count($errors) > 0) {
+//            foreach ($errors as $error) {
+//                $errs_msg['errors'][$error->getPropertyPath()] = $error->getMessage();
+//            }
+//            return new Response(json_encode($errs_msg),404);
+//        }else{
+//            $app['db']->insert('orders', $parametersAsArray);
+//            $lastInsertId = $app['db']->lastInsertId();
+//            return $app->redirect('/orders/list/' . $lastInsertId, 201);
+//        }
     }
 
     public function ordersPut(Application $app,Request $request, $id){

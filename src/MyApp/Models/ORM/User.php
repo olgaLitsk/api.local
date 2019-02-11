@@ -23,7 +23,7 @@ class User
 
 
     /**
-     * @ORM\OneToMany(targetEntity="Order", mappedBy="user",orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity="Order", mappedBy="`user`",orphanRemoval=true)
      */
     private $orders;
 

@@ -23,9 +23,8 @@ class Order
 
     /**
      * @ORM\ManyToOne(targetEntity="User", inversedBy="users")
-     * @ORM\JoinColumn(name="user", nullable=false, referencedColumnName="user_id")
+     * @ORM\JoinColumn(name="`user`", nullable=false, referencedColumnName="user_id")
      */
-
     private $user;
 
     /**
@@ -33,7 +32,7 @@ class Order
      * @ORM\ManyToMany(targetEntity="User")
      * @ORM\JoinTable(name="books_orders",
      *      joinColumns={@ORM\JoinColumn(name="order", referencedColumnName="order_id")},
-     *      inverseJoinColumns={@ORM\JoinColumn(name="user", referencedColumnName="user_id", unique=true)}
+     *      inverseJoinColumns={@ORM\JoinColumn(name="`user`", referencedColumnName="user_id", unique=true)}
      *      )
      */
     private $users;
@@ -47,9 +46,6 @@ class Order
     /** @ORM\Column(type="string") * */
     private $orderdate;
 
-//    /** @ORM\Column(type="string") * */
-//    private $user;
-
     /** @ORM\Column(type="string") * */
     private $status;
 
@@ -58,6 +54,12 @@ class Order
         $metadata->addPropertyConstraint('orderdate', new Assert\Type('string'));
         $metadata->addPropertyConstraint('user', new Assert\Type('integer'));
         $metadata->addPropertyConstraint('status', new Assert\Type('string'));
+    }
+
+    public function addBook(Book $book)
+    {
+        $book->addOrder($this); // synchronously updating inverse side
+        $this->books[] = $book;
     }
 
     public function getOrderId()

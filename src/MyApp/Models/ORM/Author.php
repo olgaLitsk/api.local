@@ -35,6 +35,12 @@ class Author
         $metadata->addPropertyConstraint('about', new Assert\Length(array('min' => 5)));
     }
 
+    private $books;
+
+    public function addBook(Book $book)
+    {
+        $this->books[] = $book;
+    }
     /**
      * Get author_id
      *
