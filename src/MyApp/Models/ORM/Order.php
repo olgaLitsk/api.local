@@ -35,7 +35,7 @@ class Order
      *      inverseJoinColumns={@ORM\JoinColumn(name="`user`", referencedColumnName="user_id", unique=true)}
      *      )
      */
-    private $users;
+    private $users;//проверить не надо ли заменить на ордер
 
     public function __construct()
     {
