@@ -69,7 +69,6 @@ class Category
             $this->books[] = $book;
             $book->setCategory($this);
         }
-
         return $this;
     }
 
@@ -82,6 +81,5 @@ class Category
                 $book->setCategory(null);
             }
         }
-
     }
 }

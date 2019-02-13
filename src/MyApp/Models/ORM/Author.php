@@ -39,7 +39,7 @@ class Author
 
     public function addBook(Book $book)
     {
-        $this->books[] = $book;
+        $this->books = $book;
     }
     /**
      * Get author_id

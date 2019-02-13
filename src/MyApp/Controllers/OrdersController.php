@@ -74,14 +74,20 @@ class OrdersController implements ControllerProviderInterface
         $order->setUser($content['user']);
 //        dump($content['books']);
 
-        foreach ($content['books'] as $val) {
-            if (!$app['em']->getRepository('MyApp\Models\ORM\Book')->find($val)) {
-                return $app->json(array('message' => 'Not found book id'.$val));
+//        foreach ($content['books'] as $val) {
+//            if (!$app['em']->getRepository('MyApp\Models\ORM\Book')->find($val)) {
+//                return $app->json(array('message' => 'Not found book id'.$val));
+//            }
+//            $order->addBook($app['em']->getRepository('MyApp\Models\ORM\Book')->find($val));
+//        }
+        $books = array();
+        foreach ($content['books'] as $k) {
+            if (!$app['em']->getRepository('MyApp\Models\ORM\Book')->find($k)) {
+                return $app->json(array('message' => 'Not found book id ' . $k));
             }
-            $order->addBook($app['em']->getRepository('MyApp\Models\ORM\Book')->find($val));
+            $books[$k] = $app['em']->getRepository('MyApp\Models\ORM\Book')->find($k);
         }
-
-//        return;
+        $order->setBook($books);
 
         $errors = $app['validator']->validate($order);
         $errs_msg = [];

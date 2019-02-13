@@ -50,17 +50,34 @@ class Book
     {
         $this->authors = new ArrayCollection();
     }
-
-    public function addAuthor(Author $author)
+     /**
+     * @param mixed $authors
+     */
+    public function setAuthor($authors)
     {
-        $author->addBook($this); // synchronously updating inverse side
-        $this->authors[] = $author;
+        $this->authors = new ArrayCollection($authors);
     }
 
-    public function addOrder(Order $order)
-    {
-        $this->orders[] = $order;
-    }
+//    public function addAuthor(Author $author)
+//    {
+//        if ($this->authors->contains($author)) {
+//            return;
+//        }
+//        $this->authors[] = $author;
+//        $author->addBook($this); // synchronously updating inverse side
+//    }
+//
+//    public function removeAuthor(Author $author)
+//    {
+//        $this->authors->removeElement($author);
+//        // установите владеющую сторону, как null
+//        $author->addBook(null);
+//    }
+
+//    public function addOrder(Order $order)
+//    {
+//        $this->orders[] = $order;
+//    }
 
     static public function loadValidatorMetadata(ClassMetadata $metadata)
     {

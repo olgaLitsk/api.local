@@ -22,10 +22,10 @@ class Order
     private $order_id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="User", inversedBy="users")
-     * @ORM\JoinColumn(name="`user`", nullable=false, referencedColumnName="user_id")
+     * @ORM\ManyToOne(targetEntity="User", inversedBy="orders")
+     * @ORM\JoinColumn(name="users", nullable=false, referencedColumnName="user_id")
      */
-    private $user;
+    private $users;
 //
 //    /**
 //     * Many Book have Many Orders.
@@ -42,11 +42,11 @@ class Order
 //        $this->users = new ArrayCollection();
 //    }
     /**
-     * Many Book have Many Orders.
+     * Many Order have Many Books.
      * @ORM\ManyToMany(targetEntity="Book")
      * @ORM\JoinTable(name="books_orders",
      *      joinColumns={@ORM\JoinColumn(name="order", referencedColumnName="order_id")},
-     *      inverseJoinColumns={@ORM\JoinColumn(name="`book`", referencedColumnName="book_id", unique=true)}
+     *      inverseJoinColumns={@ORM\JoinColumn(name="book", referencedColumnName="book_id", unique=true)}
      *      )
      */
     private $books;//проверить не надо ли заменить на ордер
@@ -54,9 +54,12 @@ class Order
     public function __construct()
     {
         $this->books = new ArrayCollection();
+//        $this->users = new ArrayCollection();
+
     }
 
-
+    /** @ORM\Column(type="integer") * */
+    private $user;
     /** @ORM\Column(type="string") * */
     private $orderdate;
 
@@ -69,12 +72,16 @@ class Order
         $metadata->addPropertyConstraint('user', new Assert\Type('integer'));
         $metadata->addPropertyConstraint('status', new Assert\Type('string'));
     }
-
-    public function addBook(Book $book)
+    public function setBook($books)
     {
-        $book->addOrder($this); // synchronously updating inverse side
-        $this->books[] = $book;
+        $this->books = new ArrayCollection($books);
     }
+
+//    public function addBook(Book $book)
+//    {
+//        $book->addOrder($this); // synchronously updating inverse side
+//        $this->books[] = $book;
+//    }
 
     public function getOrderId()
     {
