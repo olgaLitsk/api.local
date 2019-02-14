@@ -79,7 +79,6 @@ class BooksController implements ControllerProviderInterface
             $book->setShortdescription($content['shortdescription']);
             $book->setPrice($content['price']);
             $book->setCategory($category);
-
             $authors = array();
             foreach ($content['authors'] as $k) {
                 if (!$app['em']->getRepository('MyApp\Models\ORM\Author')->find($k)) {
@@ -87,7 +86,8 @@ class BooksController implements ControllerProviderInterface
                 }
                 $authors[$k] = $app['em']->getRepository('MyApp\Models\ORM\Author')->find($k);
             }
-            $book->setAuthor($authors);
+            $book->setAuthor($authors);dump($book);
+
 //            foreach ($content['authors'] as $key) {
 //                if (!$app['em']->getRepository('MyApp\Models\ORM\Author')->find($key)) {
 //                    return $app->json(array('message' => 'Not found author id ' . $key));

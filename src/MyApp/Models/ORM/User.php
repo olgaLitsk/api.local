@@ -3,6 +3,7 @@ namespace MyApp\Models\ORM;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -23,13 +24,21 @@ class User
 
 
     /**
-     * @ORM\OneToMany(targetEntity="Order", mappedBy="`user`",orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity="Order", mappedBy="`customer`",orphanRemoval=true)
      */
     private $orders;
 
     public function __construct()
     {
         $this->orders = new ArrayCollection();
+    }
+
+    /**
+     * @return Collection|Order[]
+     */
+    public function getOrders()
+    {
+        return $this->orders;
     }
 
     /** @ORM\Column(type="string") * */

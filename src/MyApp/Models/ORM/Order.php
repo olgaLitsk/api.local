@@ -23,43 +23,25 @@ class Order
 
     /**
      * @ORM\ManyToOne(targetEntity="User", inversedBy="orders")
-     * @ORM\JoinColumn(name="users", nullable=false, referencedColumnName="user_id")
+     * @ORM\JoinColumn(name="customer", nullable=false, referencedColumnName="user_id")
      */
-    private $users;
-//
-//    /**
-//     * Many Book have Many Orders.
-//     * @ORM\ManyToMany(targetEntity="User")
-//     * @ORM\JoinTable(name="books_orders",
-//     *      joinColumns={@ORM\JoinColumn(name="order", referencedColumnName="order_id")},
-//     *      inverseJoinColumns={@ORM\JoinColumn(name="`user`", referencedColumnName="user_id", unique=true)}
-//     *      )
-//     */
-//    private $users;//проверить не надо ли заменить на ордер
-//
-//    public function __construct()
-//    {
-//        $this->users = new ArrayCollection();
-//    }
+    private $customer;
+
     /**
      * Many Order have Many Books.
      * @ORM\ManyToMany(targetEntity="Book")
-     * @ORM\JoinTable(name="books_orders",
+     * @ORM\JoinTable(name="booksOrders",
      *      joinColumns={@ORM\JoinColumn(name="order", referencedColumnName="order_id")},
-     *      inverseJoinColumns={@ORM\JoinColumn(name="book", referencedColumnName="book_id", unique=true)}
+     *      inverseJoinColumns={@ORM\JoinColumn(name="book", referencedColumnName="book_id")}
      *      )
      */
-    private $books;//проверить не надо ли заменить на ордер
+    private $books;
 
     public function __construct()
     {
         $this->books = new ArrayCollection();
-//        $this->users = new ArrayCollection();
-
     }
 
-    /** @ORM\Column(type="integer") * */
-    private $user;
     /** @ORM\Column(type="string") * */
     private $orderdate;
 
@@ -69,19 +51,13 @@ class Order
     static public function loadValidatorMetadata(ClassMetadata $metadata)
     {
         $metadata->addPropertyConstraint('orderdate', new Assert\Type('string'));
-        $metadata->addPropertyConstraint('user', new Assert\Type('integer'));
+//        $metadata->addPropertyConstraint('customer', new Assert\Type('integer'));
         $metadata->addPropertyConstraint('status', new Assert\Type('string'));
     }
     public function setBook($books)
     {
         $this->books = new ArrayCollection($books);
     }
-
-//    public function addBook(Book $book)
-//    {
-//        $book->addOrder($this); // synchronously updating inverse side
-//        $this->books[] = $book;
-//    }
 
     public function getOrderId()
     {
@@ -98,14 +74,14 @@ class Order
         $this->orderdate = $orderdate;
     }
 
-    public function getUser()
+    public function getUser():User
     {
-        return $this->user;
+        return $this->customer;
     }
 
-    public function setUser($user)
+    public function setUser(User $customer)
     {
-        $this->user = $user;
+        $this->customer = $customer;
     }
 
     public function getStatus()

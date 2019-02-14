@@ -68,18 +68,19 @@ class OrdersController implements ControllerProviderInterface
     public function ordersPost(Application $app,Request $request){
         $content = json_decode($request->getContent(), true);
 
+        $user = $app['em']->getRepository('MyApp\Models\ORM\User')
+            ->find($content['user']);
+        if (!$user) {
+            return $app->json(array('message' => 'Not found user id ' . $content['user']));
+        }
+
         $order = new Order();
         $order->setOrderdate($content['orderdate']);
         $order->setStatus($content['status']);
-        $order->setUser($content['user']);
-//        dump($content['books']);
 
-//        foreach ($content['books'] as $val) {
-//            if (!$app['em']->getRepository('MyApp\Models\ORM\Book')->find($val)) {
-//                return $app->json(array('message' => 'Not found book id'.$val));
-//            }
-//            $order->addBook($app['em']->getRepository('MyApp\Models\ORM\Book')->find($val));
-//        }
+        $order->setUser($user);
+
+
         $books = array();
         foreach ($content['books'] as $k) {
             if (!$app['em']->getRepository('MyApp\Models\ORM\Book')->find($k)) {
@@ -88,7 +89,7 @@ class OrdersController implements ControllerProviderInterface
             $books[$k] = $app['em']->getRepository('MyApp\Models\ORM\Book')->find($k);
         }
         $order->setBook($books);
-
+        dump($order);
         $errors = $app['validator']->validate($order);
         $errs_msg = [];
         if (count($errors) > 0) {

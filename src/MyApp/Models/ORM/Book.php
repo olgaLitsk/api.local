@@ -15,7 +15,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Book
 {
     /**
-     * @ORM\Column(name="book_id", type="integer")
+//     * @ORM\Column(name="book_id", type="integer")
      * @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue
      * @var int
      */
@@ -74,10 +74,12 @@ class Book
 //        $author->addBook(null);
 //    }
 
-//    public function addOrder(Order $order)
-//    {
-//        $this->orders[] = $order;
-//    }
+    private $orders;
+
+    public function addOrder(Order $order)
+    {
+        $this->orders = $order;
+    }
 
     static public function loadValidatorMetadata(ClassMetadata $metadata)
     {
