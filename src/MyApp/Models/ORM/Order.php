@@ -30,8 +30,8 @@ class Order
     /**
      * Many Order have Many Books.
      * @ORM\ManyToMany(targetEntity="Book")
-     * @ORM\JoinTable(name="booksOrders",
-     *      joinColumns={@ORM\JoinColumn(name="order", referencedColumnName="order_id")},
+     * @ORM\JoinTable(name="books_orders",
+     *      joinColumns={@ORM\JoinColumn(name="`order`", referencedColumnName="order_id")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="book", referencedColumnName="book_id")}
      *      )
      */
@@ -93,5 +93,4 @@ class Order
     {
         $this->status = $status;
     }
-
 }

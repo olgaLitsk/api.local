@@ -34,14 +34,14 @@ class OrdersController implements ControllerProviderInterface
 
     public function showAction(Application $app)
     {
-//        try {
+        try {
             $repository = $app['em']->getRepository('MyApp\Models\ORM\Order');
             $query = $repository->createQueryBuilder('o')->getQuery();
             $orders = $query->getArrayResult();
             return $app->json($orders, 200);
-//        } catch (\Exception $e) {
-//            return $app->json($e, 404);
-//        }
+        } catch (\Exception $e) {
+            return $app->json($e, 404);
+        }
     }
 
     public function showActionId(Application $app, $id)
@@ -89,7 +89,6 @@ class OrdersController implements ControllerProviderInterface
             $books[$k] = $app['em']->getRepository('MyApp\Models\ORM\Book')->find($k);
         }
         $order->setBook($books);
-        dump($order);
         $errors = $app['validator']->validate($order);
         $errs_msg = [];
         if (count($errors) > 0) {
@@ -103,55 +102,48 @@ class OrdersController implements ControllerProviderInterface
             $order_id = $order->getOrderId();
             return $app->redirect('/orders/' . $order_id, 201);
         }
-//        $parametersAsArray = array();
-//        if ($content = $request->getContent()) {
-//            $parametersAsArray = json_decode($content, true);
-//        }
-//        $constraint = new Assert\Collection(array(
-//            'orderdate' => new Assert\Type('string'),
-//            'customer'  => new Assert\Type('integer'),
-//            'status' => new Assert\Type('string'),
-//        ));
-//
-//        $errors = $app['validator']->validate($parametersAsArray, $constraint);
-//
-//        $errs_msg = array();
-//        if (count($errors) > 0) {
-//            foreach ($errors as $error) {
-//                $errs_msg['errors'][$error->getPropertyPath()] = $error->getMessage();
-//            }
-//            return new Response(json_encode($errs_msg),404);
-//        }else{
-//            $app['db']->insert('orders', $parametersAsArray);
-//            $lastInsertId = $app['db']->lastInsertId();
-//            return $app->redirect('/orders/list/' . $lastInsertId, 201);
-//        }
     }
 
     public function ordersPut(Application $app,Request $request, $id){
-        $parametersAsArray = array();
-        if ($content = $request->getContent()) {
-            $parametersAsArray = json_decode($content, true);
-        }
-        $constraintArr = array();
-        if (isset($parametersAsArray['orderdate'])) $constraintArr['orderdate'] = new Assert\Type('string');
-        if (isset($parametersAsArray['customer'])) $constraintArr['customer'] = new Assert\Type('integer');
-        if (isset($parametersAsArray['status'])) $constraintArr['status'] = new Assert\Type('string');
+        try {
+            $content = json_decode($request->getContent(), true);
 
-        $constraint = new Assert\Collection($constraintArr);
-
-        $errors = $app['validator']->validate($parametersAsArray, $constraint);
-
-        $errs_msg = array();
-        if (count($errors) > 0) {
-            foreach ($errors as $error) {
-                $errs_msg['errors'][$error->getPropertyPath()] = $error->getMessage();
+            $user = $app['em']->getRepository('MyApp\Models\ORM\User')
+                ->find($content['user']);
+            if (!$user) {
+                return $app->json(array('message' => 'Not found user id ' . $content['user']));
             }
-            return new Response(json_encode($errs_msg),404);
-        }else{
-            $app['db']->update('orders', $parametersAsArray, array('order_id' => $id));
+            $order = $app['em']->getRepository('MyApp\Models\ORM\Order')
+                ->find($id);
+            $order->setOrderdate($content['orderdate']);
+            $order->setStatus($content['status']);
+
+            $order->setUser($user);
+
+            $books = array();
+            foreach ($content['books'] as $k) {
+                if (!$app['em']->getRepository('MyApp\Models\ORM\Book')->find($k)) {
+                    return $app->json(array('message' => 'Not found book id ' . $k));
+                }
+                $books[$k] = $app['em']->getRepository('MyApp\Models\ORM\Book')->find($k);
+            }
+            $order->setBook($books);
+
+            $errors = $app['validator']->validate($order);
+            $errs_msg = [];
+            if (count($errors) > 0) {
+                foreach ($errors as $error) {
+                    $errs_msg['errors'][$error->getPropertyPath()] = $error->getMessage();
+                }
+                return $app->json($errs_msg, 404);
+            } else {
+                $app['em']->flush();
+                $order_id = $order->getOrderId();
+                return $app->json(array('message'=>'Order id '.$order_id.' updated'), 200);
+            }
+        } catch (\Exception $e) {
+            return $app->json($e, 404);
         }
-        return new Response('order updated',200);
     }
 
     public function ordersDelete(Application $app, $id){

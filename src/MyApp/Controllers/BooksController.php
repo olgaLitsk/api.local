@@ -19,7 +19,6 @@ class BooksController implements ControllerProviderInterface
         $books
             ->get("/{id}", "MyApp\\Controllers\\BooksController::showActionId")// вывод инф-ии о книге
             ->assert('id', '\d+');
-
         $books->post("/", "MyApp\\Controllers\\BooksController::createAction");    // добавление книги
 
 //        $books->get("/{book}", "MyApp\\Controllers\\BooksController::bookIdbooksGet");    // вывод книг, написанных конкретным автором
@@ -32,12 +31,17 @@ class BooksController implements ControllerProviderInterface
         return $books;
     }
 
-    public function showAction(Application $app)
+    public function showAction(Application $app, Request $request)
     {
         try {
             $repository = $app['em']->getRepository('MyApp\Models\ORM\Book');
-            $query = $repository->createQueryBuilder('a')->getQuery();
-            $books = $query->getArrayResult();
+            $query = $repository->createQueryBuilder('a');
+
+            if ($request->get('search')) {
+                $query->where('a.title = :identifier')
+                    ->setParameter('identifier', $request->get('search'));
+            }
+            $books = $query->getQuery()->getArrayResult();
             return $app->json($books, 200);
         } catch (\Exception $e) {
             return $app->json($e, 404);
@@ -86,7 +90,8 @@ class BooksController implements ControllerProviderInterface
                 }
                 $authors[$k] = $app['em']->getRepository('MyApp\Models\ORM\Author')->find($k);
             }
-            $book->setAuthor($authors);dump($book);
+            $book->setAuthor($authors);
+            dump($book);
 
 //            foreach ($content['authors'] as $key) {
 //                if (!$app['em']->getRepository('MyApp\Models\ORM\Author')->find($key)) {

@@ -147,5 +147,14 @@ class User
     {
         $this->password = $password;
     }
-
+//    public function removeOrder(Order $order): self
+//    {
+//        if ($this->orders->contains($order)) {
+//            $this->orders->removeElement($order);
+//            // set the owning side to null (unless already changed)
+//            if ($order->getOrder() === $this) {
+//                $order->setOrder(null);
+//            }
+//        }
+//    }
 }

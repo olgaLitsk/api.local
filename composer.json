@@ -1,21 +1,23 @@
 {
-    "require": {
-        "silex/silex": "^2.0",
-        "swiftmailer/swiftmailer": "^6.1",
-        "symfony/validator": "^3.4",
-        "symfony/security": "^3.4",
-        "doctrine/dbal": "~2.2",
-        "monolog/monolog": "^1.24",
-        "doctrine/orm": "2.5.x-dev"
-    },
-    "autoload" : {
-        "psr-4" : {
-            "MyApp\\" : "src/MyApp",
-            "Providers\\" : "src/MyApp"
-
-        }
-    },
-    "require-dev": {
-        "symfony/var-dumper": "^3.4"
+  "require": {
+    "silex/silex": "^2.0",
+    "swiftmailer/swiftmailer": "^5.1",
+    "symfony/validator": "^3.4",
+    "symfony/security": "^3.4",
+    "doctrine/dbal": "~2.2",
+    "monolog/monolog": "^1.24",
+    "doctrine/orm": "2.5.x-dev",
+    "symfony/browser-kit": "^3.4"
+  },
+  "autoload": {
+    "psr-4": {
+      "MyApp\\": "src/MyApp",
+      "Providers\\": "src/MyApp",
+      "Tests\\": "tests/MyApp"
     }
+  },
+  "require-dev": {
+    "symfony/var-dumper": "^3.4",
+    "symfony/css-selector": "^3.4"
+  }
 }

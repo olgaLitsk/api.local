@@ -86,8 +86,7 @@ class Book
         $metadata->addPropertyConstraint('title', new Assert\NotBlank());
         $metadata->addPropertyConstraint('shortdescription', new Assert\NotBlank());
         $metadata->addPropertyConstraint('price', new Assert\Type('float'));
-        $metadata->addPropertyConstraint('price', new Assert\Type('float'));
-    }
+     }
 
     public function getBookId()
     {

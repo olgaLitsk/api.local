@@ -1,13 +1,26 @@
 <?php
 // /web/index.php
-$app = require_once __DIR__ . '/../app/app.php';
-require __DIR__ . '/../app/config/prod.php';
+require_once __DIR__ . '/../vendor/autoload.php';
+use Symfony\Component\HttpFoundation\Response;
+
+$app = new Silex\Application();
+
+$app->get('/', function() {
+    return new Response('Welcome to my new Silex app');
+});
 
 //Services
 $app->register(new \Silex\Provider\TwigServiceProvider(), array(
     'twig.path' => __DIR__ . '/../resources/views'
 ));
-
+$app['db.options'] = array(
+    "driver"     => "pdo_pgsql",
+    "host"       => "localhost",
+    "dbname"     =>"postgres",
+    "user"       => "postgres",
+    "port"       =>"5432",
+    "password"   => "",
+);
 $app->register(new \Silex\Provider\DoctrineServiceProvider(), array(
     'db.options' => $app['db.options']
 ));
@@ -18,23 +31,21 @@ $app['phone.service'] = function () {
     return new MyApp\Services\CheckPhoneService();
 };
 
+$app->register(new \MyApp\Providers\AuthorServiceProvider());
+
 $app->register(new MyApp\Providers\DoctrineOrmServiceProvider(), array(
     'db.options' => $app['db.options']
 ));
-
-//$app->mount("/users", new MyApp\Controller\Providers\Users());
-//$app->mount("/books", new MyApp\Controller\Providers\Books());
-//$app->mount("/orders", new MyApp\Controller\Providers\Orders());
-//$app->mount("/authors", new MyApp\Controller\Providers\Authors());
-
 
 $app->mount("/authors", new \MyApp\Controllers\AuthorsController());
 $app->mount("/books", new \MyApp\Controllers\BooksController());
 $app->mount("/users", new \MyApp\Controllers\UsersController());
 $app->mount("/orders", new \MyApp\Controllers\OrdersController());
+
 //$app->register(new Silex\Provider\SecurityServiceProvider());
 //$app['security.firewalls'] = array(
-//    'anonumous' => array(
+//    'secure' => array(
+//        'anonymous' => true,
 //        'pattern' => '^/books',
 //        'http' => true,
 //        'users' => array(
@@ -46,4 +57,10 @@ $app->mount("/orders", new \MyApp\Controllers\OrdersController());
 ////        },
 //    ),
 //);
+//
+//
+//$app['security.access_rules'] = array(
+//    array('^/orders$', 'ROLE_ADMIN'),
+//);
 $app->run();
+//return $app;

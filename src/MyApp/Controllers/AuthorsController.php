@@ -58,7 +58,6 @@ class AuthorsController implements ControllerProviderInterface
                 $error = array('message' => 'Not found author for id ' . $id);
                 return $app->json($error, 404);
             }
-
             return $app->json($authors, 200);
         } catch (\Exception $e) {
             return $app->json($e, 404);
@@ -67,7 +66,7 @@ class AuthorsController implements ControllerProviderInterface
 
     public function createAction(Application $app, Request $request)
     {
-        try {
+//        try {
             $content = json_decode($request->getContent(), true);
             $author = new Author();
             $author->setFirstname($content['firstname']);
@@ -87,9 +86,9 @@ class AuthorsController implements ControllerProviderInterface
                 $author_id = $author->getAuthorId();
                 return $app->redirect('/authors/' . $author_id, 201);
             }
-        } catch (\Exception $e) {
-            return $app->json($e, 404);
-        }
+//        } catch (\Exception $e) {
+//            return $app->json($e, 404);
+//        }
     }
 
     public function updateAction(Application $app, Request $request, $id)
