@@ -63,4 +63,4 @@ $app->mount("/orders", new \MyApp\Controllers\OrdersController());
 //    array('^/orders$', 'ROLE_ADMIN'),
 //);
 $app->run();
-//return $app;
+return $app;

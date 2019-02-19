@@ -8,24 +8,40 @@ use PHPUnit\Framework\TestCase;
 
 class AuthorsControllerTest extends TestCase
 {
-    private $author;
-    public function setUp()
-    {
-        $app = new Application();
-        $app->register(new DoctrineServiceProvider(), array(
-            "db.options" => array(
-                "driver" => "pdo_sqlite",
-                "memory" => true
-            ),
-        ));
-    }
+//    private $author;
+//    public function setUp()
+//    {
+//        $app = new Application();
+//        $app->register(new DoctrineServiceProvider(), array(
+//            "db.options" => array(
+//                "driver" => "pdo_sqlite",
+//                "memory" => true
+//            ),
+//        ));
+//    }
 
     public function testGetOne()
-    {
-        $this->author = new AuthorsController();
+    {$app = new Application();
+        $author = $this->getMockBuilder(AuthorsController::class)->getMock();
+//        $author
+//            ->method('showActionId')
+//            ->with($this->isInstanceOf('Application') ,$this->isType('int'));
+//            ->will($this->returnValue('foo'));
+        dump($author);
+        $id=1;
+        $this->assertTrue($author->showactionid($app,$id));
+//        $this->assertInstanceOf('AuthorsController', $author);
+//        $this->assertSame('[]', $author->showactionid($app));
+//        $this->author = new AuthorsController();
+//
+//        $data = $this->author->showActionId(1);
+//        $this->assertEquals('dummyfirstname', $data['firstname']);
+    }
 
-        $data = $this->author->showActionId(1);
-        $this->assertEquals('dummyfirstname', $data['firstname']);
+    public function testTrueIsTrue()
+    {
+        $foo = true;
+        $this->assertTrue($foo);
     }
 
 //    public function testGetAll()
