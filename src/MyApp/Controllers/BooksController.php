@@ -9,6 +9,7 @@ use Silex\Api\ControllerProviderInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 class BooksController implements ControllerProviderInterface
 {
@@ -19,14 +20,28 @@ class BooksController implements ControllerProviderInterface
         $books
             ->get("/{id}", "MyApp\\Controllers\\BooksController::showActionId")// вывод инф-ии о книге
             ->assert('id', '\d+');
-        $books->post("/", "MyApp\\Controllers\\BooksController::createAction");    // добавление книги
-
-//        $books->get("/{book}", "MyApp\\Controllers\\BooksController::bookIdbooksGet");    // вывод книг, написанных конкретным автором
+        $books
+            ->post("/", "MyApp\\Controllers\\BooksController::createAction")// добавление книги
+            ->before(function (Request $request) use ($app) {
+                if (!$app['security.authorization_checker']->isGranted('ROLE_ADMIN', $request->get('id'))) {
+                    throw new AccessDeniedException('Access Denied.');
+                }
+            });
         $books
             ->put("/{id}", "MyApp\\Controllers\\BooksController::updateAction")// обновление данных о книге
+            ->before(function (Request $request) use ($app) {
+                if (!$app['security.authorization_checker']->isGranted('ROLE_ADMIN', $request->get('id'))) {
+                    throw new AccessDeniedException('Access Denied.');
+                }
+            })
             ->assert('id ', '\d+');
         $books
             ->delete("/{id}", "MyApp\\Controllers\\BooksController::deleteAction")// удаление книги
+            ->before(function (Request $request) use ($app) {
+                if (!$app['security.authorization_checker']->isGranted('ROLE_ADMIN', $request->get('id'))) {
+                    throw new AccessDeniedException('Access Denied.');
+                }
+            })
             ->assert('id ', '\d+');
         return $books;
     }
@@ -91,8 +106,6 @@ class BooksController implements ControllerProviderInterface
                 $authors[$k] = $app['em']->getRepository('MyApp\Models\ORM\Author')->find($k);
             }
             $book->setAuthor($authors);
-            dump($book);
-
 //            foreach ($content['authors'] as $key) {
 //                if (!$app['em']->getRepository('MyApp\Models\ORM\Author')->find($key)) {
 //                    return $app->json(array('message' => 'Not found author id ' . $key));

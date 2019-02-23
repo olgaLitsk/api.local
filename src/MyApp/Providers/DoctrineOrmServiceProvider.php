@@ -18,7 +18,7 @@ class DoctrineOrmServiceProvider implements ServiceProviderInterface
                 "user" => "postgres",
                 "port" => "5432",
                 "password" => "",
-            );
+            );//$app['db.options']
             $isDevMode = true;
             $isSimpleMode = FALSE;
             $proxyDir = null;

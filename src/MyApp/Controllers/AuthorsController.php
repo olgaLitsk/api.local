@@ -7,6 +7,7 @@ use Silex\Api\ControllerProviderInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 class AuthorsController implements ControllerProviderInterface
 {
@@ -14,21 +15,36 @@ class AuthorsController implements ControllerProviderInterface
     {
         $authors = $app["controllers_factory"];
         $authors->get("/", "MyApp\\Controllers\\AuthorsController::showAction");    // вывод списка авторов
-        $authors->post("/", "MyApp\\Controllers\\AuthorsController::createAction");    // добавление нового автора
+        $authors
+            ->post("/", "MyApp\\Controllers\\AuthorsController::createAction")// добавление нового автора
+            ->before(function () use ($app) {
+                if (!$app['security.authorization_checker']->isGranted('ROLE_ADMIN')) {
+                    throw new AccessDeniedException('Access Denied.');
+                }
+            });
         $authors
             ->get("/{id}", "MyApp\\Controllers\\AuthorsController::showActionId")// вывод инф-ии об авторе
             ->assert('id', '\d+');
         $authors
             ->put("/{id}", "MyApp\\Controllers\\AuthorsController::updateAction")// обновление данных автора
+            ->before(function (Request $request) use ($app) {
+                if (!$app['security.authorization_checker']->isGranted('ROLE_ADMIN', $request->get('id'))) {
+                    throw new AccessDeniedException('Access Denied.');
+                }
+            })
             ->assert('id ', '\d+');
         $authors
             ->delete("/{id}", "MyApp\\Controllers\\AuthorsController::deleteAction")// удаление автора
+            ->before(function (Request $request) use ($app) {
+                if (!$app['security.authorization_checker']->isGranted('ROLE_ADMIN', $request->get('id'))) {
+                    throw new AccessDeniedException('Access Denied.');
+                }
+            })
             ->assert('id ', '\d+ ');
-
         // доп-но
         $authors
             ->get("/{id}/books", "MyApp\\Controllers\\AuthorsController::authorsIdBooksGet")//вывод списка книг, принадлежащих автору с #id
-            ->assert('id ', '\d+ ');//+
+            ->assert('id ', '\d+ ');
         return $authors;
     }
 
@@ -66,29 +82,29 @@ class AuthorsController implements ControllerProviderInterface
 
     public function createAction(Application $app, Request $request)
     {
-//        try {
-            $content = json_decode($request->getContent(), true);
-            $author = new Author();
-            $author->setFirstname($content['firstname']);
-            $author->setLastname($content['lastname']);
-            $author->setAbout($content['about']);
+        try {
+        $content = json_decode($request->getContent(), true);
+        $author = new Author();
+        $author->setFirstname($content['firstname']);
+        $author->setLastname($content['lastname']);
+        $author->setAbout($content['about']);
 
-            $errors = $app['validator']->validate($author);
-            $errs_msg = [];
-            if (count($errors) > 0) {
-                foreach ($errors as $error) {
-                    $errs_msg['errors'][$error->getPropertyPath()] = $error->getMessage();
-                }
-                return $app->json($errs_msg, 404);
-            } else {
-                $app['em']->persist($author);
-                $app['em']->flush();
-                $author_id = $author->getAuthorId();
-                return $app->redirect('/authors/' . $author_id, 201);
+        $errors = $app['validator']->validate($author);
+        $errs_msg = [];
+        if (count($errors) > 0) {
+            foreach ($errors as $error) {
+                $errs_msg['errors'][$error->getPropertyPath()] = $error->getMessage();
             }
-//        } catch (\Exception $e) {
-//            return $app->json($e, 404);
-//        }
+            return $app->json($errs_msg, 404);
+        } else {
+            $app['em']->persist($author);
+            $app['em']->flush();
+            $author_id = $author->getAuthorId();
+            return $app->redirect('/authors/' . $author_id, 201);
+        }
+        } catch (\Exception $e) {
+            return $app->json($e, 404);
+        }
     }
 
     public function updateAction(Application $app, Request $request, $id)

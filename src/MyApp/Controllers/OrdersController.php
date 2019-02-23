@@ -7,6 +7,7 @@ use Silex\Api\ControllerProviderInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 class OrdersController implements ControllerProviderInterface
 {
@@ -14,21 +15,26 @@ class OrdersController implements ControllerProviderInterface
     {
         $orders = $app["controllers_factory"];
         $orders->get("/", "MyApp\\Controllers\\OrdersController::showAction");// вывод списка заказов
-        $orders->post("/", "MyApp\\Controllers\\OrdersController::ordersPost");// создание заказа
+        $orders->post("/", "MyApp\\Controllers\\OrdersController::ordersPost");// создание заказа юзерами
         $orders
             ->get("/{id}", "MyApp\\Controllers\\OrdersController::showActionId")// вывод данных по заказу
             ->assert ('id', '\d+');
         $orders
             ->put("/{id}", "MyApp\\Controllers\\OrdersController::ordersPut") // обновление данных по заказу
+            ->before(function (Request $request) use ($app) {
+                if (!$app['security.authorization_checker']->isGranted('ROLE_ADMIN', $request->get('id'))) {
+                    throw new AccessDeniedException('Access Denied.');
+                }
+            })
             ->assert ('id ', '\d+');
         $orders
             ->delete("/{id}", "MyApp\\Controllers\\OrdersController::ordersDelete")// удаление заказа
+            ->before(function (Request $request) use ($app) {
+                if (!$app['security.authorization_checker']->isGranted('ROLE_ADMIN', $request->get('id'))) {
+                    throw new AccessDeniedException('Access Denied.');
+                }
+            })
             ->assert ('id ', '\d+ ');
-//-
-        $orders
-            ->get("/books/{id}", "MyApp\\Controllers\\OrdersController::ordersIdBooksGet") //книги принадлежащие заказу #id
-            ->assert ('id ', '\d+ ');
-
         return $orders;
     }
 
