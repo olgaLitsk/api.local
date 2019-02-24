@@ -6,6 +6,9 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
+    'mikemccabe\\JsonPatch\\' => array($vendorDir . '/mikemccabe/json-patch-php/src'),
+    'gamringer\\JSONPointer\\' => array($vendorDir . '/gamringer/php-json-pointer/src'),
+    'gamringer\\JSONPatch\\' => array($vendorDir . '/gamringer/php-json-patch/src'),
     'Tests\\' => array($baseDir . '/tests/MyApp'),
     'Symfony\\Polyfill\\Util\\' => array($vendorDir . '/symfony/polyfill-util'),
     'Symfony\\Polyfill\\Php70\\' => array($vendorDir . '/symfony/polyfill-php70'),

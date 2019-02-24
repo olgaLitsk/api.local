@@ -8,6 +8,10 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use mikemccabe\JsonPatch\JsonPatch;
+
+//use gamringer\JSONPatch;
+//use \gamringer\JSONPatch\Patch;
 
 class AuthorsController implements ControllerProviderInterface
 {
@@ -32,6 +36,9 @@ class AuthorsController implements ControllerProviderInterface
                     throw new AccessDeniedException('Access Denied.');
                 }
             })
+            ->assert('id ', '\d+');
+        $authors
+            ->patch("/{id}", "MyApp\\Controllers\\AuthorsController::patchAction")// обновление данных автора
             ->assert('id ', '\d+');
         $authors
             ->delete("/{id}", "MyApp\\Controllers\\AuthorsController::deleteAction")// удаление автора
@@ -83,25 +90,25 @@ class AuthorsController implements ControllerProviderInterface
     public function createAction(Application $app, Request $request)
     {
         try {
-        $content = json_decode($request->getContent(), true);
-        $author = new Author();
-        $author->setFirstname($content['firstname']);
-        $author->setLastname($content['lastname']);
-        $author->setAbout($content['about']);
+            $content = json_decode($request->getContent(), true);
+            $author = new Author();
+            $author->setFirstname($content['firstname']);
+            $author->setLastname($content['lastname']);
+            $author->setAbout($content['about']);
 
-        $errors = $app['validator']->validate($author);
-        $errs_msg = [];
-        if (count($errors) > 0) {
-            foreach ($errors as $error) {
-                $errs_msg['errors'][$error->getPropertyPath()] = $error->getMessage();
+            $errors = $app['validator']->validate($author);
+            $errs_msg = [];
+            if (count($errors) > 0) {
+                foreach ($errors as $error) {
+                    $errs_msg['errors'][$error->getPropertyPath()] = $error->getMessage();
+                }
+                return $app->json($errs_msg, 404);
+            } else {
+                $app['em']->persist($author);
+                $app['em']->flush();
+                $author_id = $author->getAuthorId();
+                return $app->redirect('/authors/' . $author_id, 201);
             }
-            return $app->json($errs_msg, 404);
-        } else {
-            $app['em']->persist($author);
-            $app['em']->flush();
-            $author_id = $author->getAuthorId();
-            return $app->redirect('/authors/' . $author_id, 201);
-        }
         } catch (\Exception $e) {
             return $app->json($e, 404);
         }
@@ -131,11 +138,41 @@ class AuthorsController implements ControllerProviderInterface
             } else {
                 $app['em']->flush();
                 $author_id = $author->getAuthorId();
-                return $app->json(array('message' => 'The author id ' . $author_id . ' updated'), 200);
+                return $app->json(array('message' => 'The author id ' . $author_id . ' updated'), 204);
             }
         } catch (\Exception $e) {
             return $app->json($e, 404);
         }
+    }
+
+    public function patchAction(Application $app, Request $request, $id)
+    {
+        $contentType = $request->getContentType();
+        if ($contentType != 'json') {
+            return $app->json(array('message' => 'Unsupported type, expected application/json'), 415);
+        }
+        $repository = $app['em']->getRepository('MyApp\Models\ORM\Author');
+        $query = $repository->createQueryBuilder('a')
+            ->where('a.author_id = :identifier')
+            ->setParameter('identifier', $id)
+            ->getQuery();
+        $authors = $query->getArrayResult();
+        $resource = json_encode($authors);//json с данными из таблицы авторов
+        $jsonPatch = $request->getContent();
+        try {
+            $result = JsonPatch::patch($resource, $jsonPatch); // применить патчи к $doc и вернуть результат
+//            $patch = new Patch($resource,$jsonPatch);
+//            $result = $patch->apply();
+//            $result = json_decode($result, true);
+
+
+//записать изменения в бд авторы
+
+            return $app->json($result, 204);
+        } catch (\Exception $e) {
+            return $app->json($e, 404);
+        }
+
     }
 
     public function deleteAction(Application $app, $id)

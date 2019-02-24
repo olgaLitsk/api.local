@@ -7,9 +7,7 @@ class IndexPageTest extends WebTestCase
 {
     public function createApplication()
     {
-
         $app = require __DIR__ . '/../../../web/index.php';
-        $app_env = 'test';
         return $app;
     }
 
@@ -18,7 +16,7 @@ class IndexPageTest extends WebTestCase
      */
     public function testPageIsSuccessful($url)
     {
-        $client = self::createClient();
+        $client = $this->createClient();
         $client->request('GET', $url, [], [], ['PHP_AUTH_USER' => 'admin', 'PHP_AUTH_PW' => 'foo']);
         $this->assertTrue($client->getResponse()->isSuccessful());
         $this->assertJson($client->getResponse()->getContent());

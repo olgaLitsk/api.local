@@ -145,7 +145,7 @@ class OrdersController implements ControllerProviderInterface
             } else {
                 $app['em']->flush();
                 $order_id = $order->getOrderId();
-                return $app->json(array('message'=>'Order id '.$order_id.' updated'), 200);
+                return $app->json(array('message'=>'Order id '.$order_id.' updated'), 204);
             }
         } catch (\Exception $e) {
             return $app->json($e, 404);

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e66b1dfe29682d2c433dbc1b3f0c46d5",
+    "content-hash": "c3c0d4fb9236cc37d1848150b94dafc1",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -605,6 +605,134 @@
                 "orm"
             ],
             "time": "2017-12-17T03:03:07+00:00"
+        },
+        {
+            "name": "gamringer/php-json-patch",
+            "version": "1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/gamringer/JSONPatch.git",
+                "reference": "b83ded1d6c4495dc41305df85fda2be1748ec34c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/gamringer/JSONPatch/zipball/b83ded1d6c4495dc41305df85fda2be1748ec34c",
+                "reference": "b83ded1d6c4495dc41305df85fda2be1748ec34c",
+                "shasum": ""
+            },
+            "require": {
+                "gamringer/php-json-pointer": "~3.1",
+                "php": ">=5.4"
+            },
+            "require-dev": {
+                "pdepend/pdepend": "@stable",
+                "phpmd/phpmd": "@stable",
+                "phpunit/phpunit": "@stable",
+                "sebastian/phpcpd": "@stable",
+                "squizlabs/php_codesniffer": "@stable"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "gamringer\\JSONPatch\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Guillaume Amringer",
+                    "email": "g.amringer@gmail.com"
+                }
+            ],
+            "description": "PHP JSON Patch (RFC6902) implementation",
+            "homepage": "https://github.com/gamringer/JSONPatch",
+            "keywords": [
+                "6902",
+                "RFC6902",
+                "json",
+                "json patch"
+            ],
+            "time": "2015-09-19T02:00:23+00:00"
+        },
+        {
+            "name": "gamringer/php-json-pointer",
+            "version": "3.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/gamringer/JSONPointer.git",
+                "reference": "4c7d6b9188fd0730769086fa2fb366835acb3968"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/gamringer/JSONPointer/zipball/4c7d6b9188fd0730769086fa2fb366835acb3968",
+                "reference": "4c7d6b9188fd0730769086fa2fb366835acb3968",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.0"
+            },
+            "require-dev": {
+                "pdepend/pdepend": "@stable",
+                "phpmd/phpmd": "@stable",
+                "phpunit/phpunit": "@stable",
+                "sebastian/phpcpd": "@stable",
+                "squizlabs/php_codesniffer": "@stable"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "gamringer\\JSONPointer\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Guillaume Amringer",
+                    "email": "g.amringer@gmail.com"
+                }
+            ],
+            "description": "PHP JSON Pointer (RFC6901) implementation",
+            "homepage": "https://github.com/gamringer/JSONPointer",
+            "keywords": [
+                "6901",
+                "RFC6901",
+                "json",
+                "json pointer"
+            ],
+            "time": "2017-02-06T14:42:22+00:00"
+        },
+        {
+            "name": "mikemccabe/json-patch-php",
+            "version": "0.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/mikemccabe/json-patch-php.git",
+                "reference": "b3af30a6aec7f6467c773cd49b2d974a70f7c0d4"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/mikemccabe/json-patch-php/zipball/b3af30a6aec7f6467c773cd49b2d974a70f7c0d4",
+                "reference": "b3af30a6aec7f6467c773cd49b2d974a70f7c0d4",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "mikemccabe\\JsonPatch\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL-3.0"
+            ],
+            "description": "Produce and apply json-patch objects",
+            "time": "2015-01-05T21:19:54+00:00"
         },
         {
             "name": "monolog/monolog",

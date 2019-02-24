@@ -16,6 +16,15 @@ class ComposerStaticInitc2a05a153ea5f9233a58816f49c0f622
     );
 
     public static $prefixLengthsPsr4 = array (
+        'm' => 
+        array (
+            'mikemccabe\\JsonPatch\\' => 21,
+        ),
+        'g' => 
+        array (
+            'gamringer\\JSONPointer\\' => 22,
+            'gamringer\\JSONPatch\\' => 20,
+        ),
         'T' => 
         array (
             'Tests\\' => 6,
@@ -66,6 +75,18 @@ class ComposerStaticInitc2a05a153ea5f9233a58816f49c0f622
     );
 
     public static $prefixDirsPsr4 = array (
+        'mikemccabe\\JsonPatch\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/mikemccabe/json-patch-php/src',
+        ),
+        'gamringer\\JSONPointer\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/gamringer/php-json-pointer/src',
+        ),
+        'gamringer\\JSONPatch\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/gamringer/php-json-patch/src',
+        ),
         'Tests\\' => 
         array (
             0 => __DIR__ . '/../..' . '/tests/MyApp',

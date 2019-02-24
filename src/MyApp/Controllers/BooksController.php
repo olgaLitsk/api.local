@@ -167,7 +167,8 @@ class BooksController implements ControllerProviderInterface
             } else {
                 $app['em']->flush();
                 $book_id = $book->getBookId();
-                return $app->redirect('/books/' . $book_id, 201);
+                return $app->json(array('message' => 'The book id ' . $book_id . ' updated'), 204);
+
             }
         } catch (\Exception $e) {
             return $app->json($e, 404);

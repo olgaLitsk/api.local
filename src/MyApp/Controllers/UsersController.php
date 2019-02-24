@@ -131,7 +131,7 @@ class UsersController implements ControllerProviderInterface
             } else {
                 $app['em']->flush();
                 $user_id = $user->getUserId();
-                return $app->json(array('message' => 'The user id ' . $user_id . ' updated'), 200);
+                return $app->json(array('message' => 'The user id ' . $user_id . ' updated'), 204);
             }
         } catch (\Exception $e) {
             return $app->json($e, 404);
