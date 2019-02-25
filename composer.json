@@ -8,8 +8,9 @@
     "monolog/monolog": "^1.24",
     "doctrine/orm": "2.5.x-dev",
     "symfony/browser-kit": "^3.4",
-    "mikemccabe/json-patch-php": "^0.1.0",
-    "gamringer/php-json-patch": "^1.0"
+    "php-jsonpointer/php-jsonpointer": "^3.0",
+    "php-jsonpatch/php-jsonpatch": "^3.0",
+    "symfony/dom-crawler": "^3.4"
   },
   "autoload": {
     "psr-4": {

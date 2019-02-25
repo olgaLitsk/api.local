@@ -8,10 +8,11 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
-use mikemccabe\JsonPatch\JsonPatch;
-
-//use gamringer\JSONPatch;
-//use \gamringer\JSONPatch\Patch;
+use Rs\Json\Patch;
+use Rs\Json\Patch\InvalidPatchDocumentJsonException;
+use Rs\Json\Patch\InvalidTargetDocumentJsonException;
+use Rs\Json\Patch\InvalidOperationException;
+use Symfony\Component\DomCrawler\Crawler;
 
 class AuthorsController implements ControllerProviderInterface
 {
@@ -90,7 +91,16 @@ class AuthorsController implements ControllerProviderInterface
     public function createAction(Application $app, Request $request)
     {
         try {
-            $content = json_decode($request->getContent(), true);
+            $content = [];
+            if ($request->getContentType() == 'xml') {
+                $crawler = new Crawler($request->getContent());
+                $content['firstname'] = $crawler->filterXPath('//authors/firstname')->text();
+                $content['lastname'] = $crawler->filterXPath('//authors/lastname')->text();
+                $content['about'] = $crawler->filterXPath('//authors/about')->text();
+            }
+            if ($request->getContentType() == 'json') {
+                $content = json_decode($request->getContent(), true);
+            }
             $author = new Author();
             $author->setFirstname($content['firstname']);
             $author->setLastname($content['lastname']);
@@ -147,32 +157,46 @@ class AuthorsController implements ControllerProviderInterface
 
     public function patchAction(Application $app, Request $request, $id)
     {
-        $contentType = $request->getContentType();
-        if ($contentType != 'json') {
-            return $app->json(array('message' => 'Unsupported type, expected application/json'), 415);
-        }
-        $repository = $app['em']->getRepository('MyApp\Models\ORM\Author');
-        $query = $repository->createQueryBuilder('a')
-            ->where('a.author_id = :identifier')
-            ->setParameter('identifier', $id)
-            ->getQuery();
-        $authors = $query->getArrayResult();
-        $resource = json_encode($authors);//json с данными из таблицы авторов
-        $jsonPatch = $request->getContent();
         try {
-            $result = JsonPatch::patch($resource, $jsonPatch); // применить патчи к $doc и вернуть результат
-//            $patch = new Patch($resource,$jsonPatch);
-//            $result = $patch->apply();
-//            $result = json_decode($result, true);
+            if ($request->getContentType() != 'json') {
+                return $app->json(array('message' => 'Unsupported type, expected application/json'), 415);
+            }
+            $sql = "SELECT * FROM authors WHERE author_id = ?";
+            $authors = $app['db']->fetchAssoc($sql, array((int)$id));
+            if (!$authors) {
+                $error = array('message' => 'The author was not found.');
+                return $app->json($error, 404);
+            }
+            $targetDocument = json_encode($authors);
+            $patchDocument = $request->getContent();
+            $patch = new Patch($targetDocument, $patchDocument);
+            $patchedDocument = $patch->apply();
+            $author = $app['em']->getRepository('MyApp\Models\ORM\Author')
+                ->find($id);
+            $patchedDocument = json_decode($patchedDocument, true);
+            $author->setFirstname($patchedDocument['firstname']);
+            $author->setLastname($patchedDocument['lastname']);
+            $author->setAbout($patchedDocument['about']);
 
-
-//записать изменения в бд авторы
-
-            return $app->json($result, 204);
-        } catch (\Exception $e) {
-            return $app->json($e, 404);
+            $errors = $app['validator']->validate($author);
+            $errs_msg = [];
+            if (count($errors) > 0) {
+                foreach ($errors as $error) {
+                    $errs_msg['errors'][$error->getPropertyPath()] = $error->getMessage();
+                }
+                return $app->json($errs_msg, 404);
+            } else {
+                $app['em']->flush();
+                $author_id = $author->getAuthorId();
+                return $app->json(array('message' => 'The author id ' . $author_id . ' updated'), 204);
+            }
+        } catch (InvalidPatchDocumentJsonException $e) {
+            // Will be thrown when using invalid JSON in a patch document
+        } catch (InvalidTargetDocumentJsonException $e) {
+            // Will be thrown when using invalid JSON in a target document
+        } catch (InvalidOperationException $e) {
+            // Will be thrown when using an invalid JSON Pointer operation (i.e. missing property)
         }
-
     }
 
     public function deleteAction(Application $app, $id)
@@ -191,20 +215,4 @@ class AuthorsController implements ControllerProviderInterface
             return new Response(json_encode($e->getMessage()), 404);
         }
     }
-
-//    public function authorsIdBooksGet(Application $app, $id)
-//    {
-//        //list of books author #id - фича
-//        $sql = "SELECT * FROM books as b
-//                LEFT JOIN authors_books as ab ON b.book_id = ab.book
-//                LEFT JOIN authors as a ON a.author_id = ab.author
-//                WHERE author=?";
-//        $post = $app['db']->fetchAll($sql, array((int)$id));
-//        if (!$post) {
-//            $error = array('message' => 'The books were not found.');
-//            return $app->json($error, 404);
-//        }
-//        return $app->json($post, 200);
-//    }
-
 }

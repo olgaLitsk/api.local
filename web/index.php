@@ -1,12 +1,17 @@
 <?php
 require_once __DIR__ . '/../vendor/autoload.php';
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Request;
 
 $app = new Silex\Application();
 require __DIR__ . '/../app/config/prod.php';
 
 $app->get('/', function () {
     return new Response('Welcome to my new Silex app');
+});
+$app->after(function (Request $request, Response $response) {
+    $contentType = $request->getContentType();
+    $response->headers->set('Content-Type', $contentType);
 });
 
 //Services
@@ -53,4 +58,4 @@ $app->mount("/users", new \MyApp\Controllers\UsersController());
 $app->mount("/orders", new \MyApp\Controllers\OrdersController());
 
 $app->run();
-return $app;
+//return $app;
