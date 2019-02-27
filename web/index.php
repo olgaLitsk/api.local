@@ -59,10 +59,13 @@ $app->mount("/books", new \MyApp\Controllers\BooksController());
 $app->mount("/users", new \MyApp\Controllers\UsersController());
 $app->mount("/orders", new \MyApp\Controllers\OrdersController());
 
-//if ('test' === $app['env']) {
-//    return $app;
-//} else {
-//    $app->run();
-//}
-$app->run();
-//return $app;
+if (isset($app_env) && in_array($app_env, ['prod', 'test']))
+    $app['env'] = $app_env;
+else
+    $app['env'] = 'prod';
+
+if ('test' === $app['env']) {
+    return $app;
+} else {
+    $app->run();
+}
