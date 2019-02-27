@@ -7,6 +7,7 @@ class IndexPageTest extends WebTestCase
 {
     public function createApplication()
     {
+        $app_env = 'test';
         $app = require __DIR__ . '/../../../web/index.php';
         return $app;
     }

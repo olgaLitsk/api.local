@@ -1,4 +1,6 @@
 <?php
+// /web/index.php
+//$app = require_once __DIR__.'/../app/app.php';
 require_once __DIR__ . '/../vendor/autoload.php';
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
@@ -57,5 +59,10 @@ $app->mount("/books", new \MyApp\Controllers\BooksController());
 $app->mount("/users", new \MyApp\Controllers\UsersController());
 $app->mount("/orders", new \MyApp\Controllers\OrdersController());
 
+//if ('test' === $app['env']) {
+//    return $app;
+//} else {
+//    $app->run();
+//}
 $app->run();
 //return $app;

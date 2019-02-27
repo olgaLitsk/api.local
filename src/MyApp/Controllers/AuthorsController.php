@@ -77,7 +77,6 @@ class AuthorsController implements ControllerProviderInterface
                 ->setParameter('identifier', $id)
                 ->getQuery();
             $authors = $query->getArrayResult();
-
             if (!$authors) {
                 $error = array('message' => 'Not found author for id ' . $id);
                 return $app->json($error, 404);
@@ -97,15 +96,13 @@ class AuthorsController implements ControllerProviderInterface
                 $content['firstname'] = $crawler->filterXPath('//authors/firstname')->text();
                 $content['lastname'] = $crawler->filterXPath('//authors/lastname')->text();
                 $content['about'] = $crawler->filterXPath('//authors/about')->text();
-            }
-            if ($request->getContentType() == 'json') {
+            }else{
                 $content = json_decode($request->getContent(), true);
             }
             $author = new Author();
             $author->setFirstname($content['firstname']);
             $author->setLastname($content['lastname']);
             $author->setAbout($content['about']);
-
             $errors = $app['validator']->validate($author);
             $errs_msg = [];
             if (count($errors) > 0) {
@@ -127,7 +124,15 @@ class AuthorsController implements ControllerProviderInterface
     public function updateAction(Application $app, Request $request, $id)
     {
         try {
-            $content = json_decode($request->getContent(), true);
+            $content = [];
+            if ($request->getContentType() == 'xml') {
+                $crawler = new Crawler($request->getContent());
+                $content['firstname'] = $crawler->filterXPath('//authors/firstname')->text();
+                $content['lastname'] = $crawler->filterXPath('//authors/lastname')->text();
+                $content['about'] = $crawler->filterXPath('//authors/about')->text();
+            }else{
+                $content = json_decode($request->getContent(), true);
+            }
             $author = $app['em']->getRepository('MyApp\Models\ORM\Author')
                 ->find($id);
             if (!$author) {
@@ -137,7 +142,6 @@ class AuthorsController implements ControllerProviderInterface
             $author->setFirstname($content['firstname']);
             $author->setLastname($content['lastname']);
             $author->setAbout($content['about']);
-
             $errors = $app['validator']->validate($author);
             $errs_msg = [];
             if (count($errors) > 0) {
@@ -177,7 +181,6 @@ class AuthorsController implements ControllerProviderInterface
             $author->setFirstname($patchedDocument['firstname']);
             $author->setLastname($patchedDocument['lastname']);
             $author->setAbout($patchedDocument['about']);
-
             $errors = $app['validator']->validate($author);
             $errs_msg = [];
             if (count($errors) > 0) {
@@ -191,11 +194,11 @@ class AuthorsController implements ControllerProviderInterface
                 return $app->json(array('message' => 'The author id ' . $author_id . ' updated'), 204);
             }
         } catch (InvalidPatchDocumentJsonException $e) {
-            // Will be thrown when using invalid JSON in a patch document
+            // невалидный json в patch doc
         } catch (InvalidTargetDocumentJsonException $e) {
-            // Will be thrown when using invalid JSON in a target document
+            // невалидный json в target doc
         } catch (InvalidOperationException $e) {
-            // Will be thrown when using an invalid JSON Pointer operation (i.e. missing property)
+            // невалидный json Pointer operation (отсутствует свойство)
         }
     }
 
