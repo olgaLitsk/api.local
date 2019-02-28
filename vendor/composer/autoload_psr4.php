@@ -33,6 +33,7 @@ return array(
     'Providers\\' => array($baseDir . '/src/MyApp'),
     'MyApp\\' => array($baseDir . '/src/MyApp'),
     'Monolog\\' => array($vendorDir . '/monolog/monolog/src/Monolog'),
+    'Egulias\\EmailValidator\\' => array($vendorDir . '/egulias/email-validator/EmailValidator'),
     'Doctrine\\Instantiator\\' => array($vendorDir . '/doctrine/instantiator/src/Doctrine/Instantiator'),
     'Doctrine\\Common\\Inflector\\' => array($vendorDir . '/doctrine/inflector/lib/Doctrine/Common/Inflector'),
     'Doctrine\\Common\\Cache\\' => array($vendorDir . '/doctrine/cache/lib/Doctrine/Common/Cache'),

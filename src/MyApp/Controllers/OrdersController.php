@@ -106,6 +106,7 @@ class OrdersController implements ControllerProviderInterface
             $app['em']->persist($order);
             $app['em']->flush();
             $order_id = $order->getOrderId();
+
             return $app->redirect('/orders/' . $order_id, 201);
         }
     }

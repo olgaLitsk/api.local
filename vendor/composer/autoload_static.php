@@ -55,6 +55,10 @@ class ComposerStaticInitc2a05a153ea5f9233a58816f49c0f622
             'MyApp\\' => 6,
             'Monolog\\' => 8,
         ),
+        'E' => 
+        array (
+            'Egulias\\EmailValidator\\' => 23,
+        ),
         'D' => 
         array (
             'Doctrine\\Instantiator\\' => 22,
@@ -173,6 +177,10 @@ class ComposerStaticInitc2a05a153ea5f9233a58816f49c0f622
         'Monolog\\' => 
         array (
             0 => __DIR__ . '/..' . '/monolog/monolog/src/Monolog',
+        ),
+        'Egulias\\EmailValidator\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/egulias/email-validator/EmailValidator',
         ),
         'Doctrine\\Instantiator\\' => 
         array (
