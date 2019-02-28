@@ -85,9 +85,7 @@ class OrdersController implements ControllerProviderInterface
         $order = new Order();
         $order->setOrderdate($content['orderdate']);
         $order->setStatus($content['status']);
-
         $order->setUser($user);
-
 
         $books = array();
         foreach ($content['books'] as $k) {
