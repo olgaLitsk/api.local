@@ -48,7 +48,7 @@ class IndexPageTest extends WebTestCase
         );
         $this->assertTrue(200 === $client->getResponse()->getStatusCode());
         $this->assertTrue($client->getResponse()->isSuccessful());
-//        $this->assertJson($client->getResponse()->getContent());
+        $this->assertJson($client->getResponse()->getContent());
     }
 
     public function test_showActionId()
@@ -66,7 +66,7 @@ class IndexPageTest extends WebTestCase
         $response = $client->getResponse();
         $data = $response->getContent();
         $this->assertTrue(200 === $client->getResponse()->getStatusCode());
-//        $this->assertJson($data);
+        $this->assertJson($data);
 //        $this->assertJsonStringEqualsJsonString($data, $json);
     }
 
@@ -108,5 +108,4 @@ class IndexPageTest extends WebTestCase
         );
         $this->assertTrue(200 === $client->getResponse()->getStatusCode());
     }
-
 }
