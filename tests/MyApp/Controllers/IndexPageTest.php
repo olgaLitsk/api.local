@@ -22,9 +22,8 @@ class IndexPageTest extends WebTestCase
         $client = $this->createClient();
         $client->request('GET', $url, [], [], ['PHP_AUTH_USER' => 'admin', 'PHP_AUTH_PW' => 'foo']);
         $this->assertTrue($client->getResponse()->isSuccessful());
-//        $this->assertJson($client->getResponse()->getContent());
+        $this->assertJson($client->getResponse()->getContent());
         $this->assertTrue(200 === $client->getResponse()->getStatusCode());
-//        $this->assertTrue($client->getResponse()->headers->contains('Content-Type', 'application/json'));
     }
 
     public function provideUrls()
