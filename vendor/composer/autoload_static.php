@@ -16,6 +16,11 @@ class ComposerStaticInitc2a05a153ea5f9233a58816f49c0f622
     );
 
     public static $prefixLengthsPsr4 = array (
+        'm' => 
+        array (
+            'mult1mate\\crontab_tests\\' => 24,
+            'mult1mate\\crontab\\' => 18,
+        ),
         'T' => 
         array (
             'Tests\\' => 6,
@@ -70,6 +75,14 @@ class ComposerStaticInitc2a05a153ea5f9233a58816f49c0f622
     );
 
     public static $prefixDirsPsr4 = array (
+        'mult1mate\\crontab_tests\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/mult1mate/cron-manager/tests',
+        ),
+        'mult1mate\\crontab\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/mult1mate/cron-manager/src',
+        ),
         'Tests\\' => 
         array (
             0 => __DIR__ . '/../..' . '/tests/MyApp',
@@ -237,6 +250,13 @@ class ComposerStaticInitc2a05a153ea5f9233a58816f49c0f622
             'Doctrine\\Common\\Collections\\' => 
             array (
                 0 => __DIR__ . '/..' . '/doctrine/collections/lib',
+            ),
+        ),
+        'C' => 
+        array (
+            'Cron' => 
+            array (
+                0 => __DIR__ . '/..' . '/mtdowling/cron-expression/src',
             ),
         ),
     );

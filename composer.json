@@ -10,7 +10,8 @@
     "symfony/browser-kit": "^3.4",
     "php-jsonpointer/php-jsonpointer": "^3.0",
     "php-jsonpatch/php-jsonpatch": "^3.0",
-    "symfony/dom-crawler": "^3.4"
+    "symfony/dom-crawler": "^3.4",
+    "mult1mate/cron-manager": "^1.1"
   },
   "autoload": {
     "psr-4": {

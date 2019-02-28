@@ -6,6 +6,8 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
+    'mult1mate\\crontab_tests\\' => array($vendorDir . '/mult1mate/cron-manager/tests'),
+    'mult1mate\\crontab\\' => array($vendorDir . '/mult1mate/cron-manager/src'),
     'Tests\\' => array($baseDir . '/tests/MyApp'),
     'Symfony\\Polyfill\\Util\\' => array($vendorDir . '/symfony/polyfill-util'),
     'Symfony\\Polyfill\\Php70\\' => array($vendorDir . '/symfony/polyfill-php70'),
