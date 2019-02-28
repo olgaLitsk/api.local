@@ -8,6 +8,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use Symfony\Component\HttpKernel\HttpKernelInterface;
 
 class OrdersController implements ControllerProviderInterface
 {
@@ -18,15 +19,15 @@ class OrdersController implements ControllerProviderInterface
         $orders->post("/", "MyApp\\Controllers\\OrdersController::ordersPost");// создание заказа юзерами
         $orders
             ->get("/{id}", "MyApp\\Controllers\\OrdersController::showActionId")// вывод данных по заказу
-            ->assert ('id', '\d+');
+            ->assert('id', '\d+');
         $orders
-            ->put("/{id}", "MyApp\\Controllers\\OrdersController::ordersPut") // обновление данных по заказу
+            ->put("/{id}", "MyApp\\Controllers\\OrdersController::ordersPut")// обновление данных по заказу
             ->before(function (Request $request) use ($app) {
                 if (!$app['security.authorization_checker']->isGranted('ROLE_ADMIN', $request->get('id'))) {
                     throw new AccessDeniedException('Access Denied.');
                 }
             })
-            ->assert ('id ', '\d+');
+            ->assert('id ', '\d+');
         $orders
             ->delete("/{id}", "MyApp\\Controllers\\OrdersController::ordersDelete")// удаление заказа
             ->before(function (Request $request) use ($app) {
@@ -34,7 +35,7 @@ class OrdersController implements ControllerProviderInterface
                     throw new AccessDeniedException('Access Denied.');
                 }
             })
-            ->assert ('id ', '\d+ ');
+            ->assert('id ', '\d+ ');
         return $orders;
     }
 
@@ -71,7 +72,8 @@ class OrdersController implements ControllerProviderInterface
         }
     }
 
-    public function ordersPost(Application $app,Request $request){
+    public function ordersPost(Application $app, Request $request)
+    {
         $content = json_decode($request->getContent(), true);
 
         $user = $app['em']->getRepository('MyApp\Models\ORM\User')
@@ -105,13 +107,21 @@ class OrdersController implements ControllerProviderInterface
         } else {
             $app['em']->persist($order);
             $app['em']->flush();
-            $order_id = $order->getOrderId();
 
+            $message = (new \Swift_Message())
+                ->setSubject('Order approval')
+                ->setFrom(array('litskevich_olga@mail.ru'))
+                ->setTo($order->getUser($user)->getEmail())
+                ->setBody('Order ' . $order->getStatus());
+            $app['mailer']->send($message);
+
+            $order_id = $order->getOrderId();
             return $app->redirect('/orders/' . $order_id, 201);
         }
     }
 
-    public function ordersPut(Application $app,Request $request, $id){
+    public function ordersPut(Application $app, Request $request, $id)
+    {
         try {
             $content = json_decode($request->getContent(), true);
 
@@ -146,14 +156,23 @@ class OrdersController implements ControllerProviderInterface
             } else {
                 $app['em']->flush();
                 $order_id = $order->getOrderId();
-                return $app->json(array('message'=>'Order id '.$order_id.' updated'), 204);
+
+                $message = (new \Swift_Message())
+                    ->setSubject('Order approval')
+                    ->setFrom(array('litskevich_olga@mail.ru'))
+                    ->setTo($order->getUser($user)->getEmail())
+                    ->setBody('Order ' . $order->getStatus());
+                $app['mailer']->send($message);
+
+                return $app->json(array('message' => 'Order id ' . $order_id . ' updated'), 204);
             }
         } catch (\Exception $e) {
             return $app->json($e, 404);
         }
     }
 
-    public function ordersDelete(Application $app, $id){
+    public function ordersDelete(Application $app, $id)
+    {
         try {
             $author = $app['em']->getRepository('MyApp\Models\ORM\Order')
                 ->find($id);

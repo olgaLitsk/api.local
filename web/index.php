@@ -63,15 +63,6 @@ $app->mount("/authors", new \MyApp\Controllers\AuthorsController());
 $app->mount("/books", new \MyApp\Controllers\BooksController());
 $app->mount("/users", new \MyApp\Controllers\UsersController());
 $app->mount("/orders", new \MyApp\Controllers\OrdersController());
-$app->post('/feedback', function (Request $request) use ($app) {
-    $message = (new Swift_Message())
-        ->setSubject('Order approval')
-        ->setFrom(array('litskevich_olga@mail.ru'))
-        ->setTo(array('olha.litskevich@gmail.com'))
-        ->setBody($request->get('message'));
-
-    $app['mailer']->send($message);
-});
 
 if (isset($app_env) && in_array($app_env, ['prod', 'test']))
     $app['env'] = $app_env;
