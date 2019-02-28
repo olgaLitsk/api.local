@@ -2,6 +2,8 @@
 namespace Tests\Controllers;
 
 use Silex\WebTestCase;
+use Symfony\Component\DomCrawler\Crawler;
+
 
 class IndexPageTest extends WebTestCase
 {
@@ -86,20 +88,26 @@ class IndexPageTest extends WebTestCase
         $data = $response->getContent();
         $this->assertTrue($client->getResponse()->isRedirect());
         $this->assertTrue(201 === $client->getResponse()->getStatusCode());
+        $crawler = new Crawler($data);
+        $id = $crawler->evaluate('substring-after(//a[contains(@href, "/authors/")]/@href, "/authors/")');
+        return $id[0];
     }
 
-//    public function test_deleteAction()
-//    {
-//        $client = $this->createClient();
-//
-//        $client->request(
-//            'DELETE',
-//            '/authors/3',
-//            [],
-//            [],
-//            []
-//        );
-//        $this->assertTrue(200 === $client->getResponse()->getStatusCode());
-//    }
+    /**
+     * @depends test_createAction
+     */
+    public function test_deleteAction($id)
+    {
+        $client = $this->createClient();
+        $url = '/authors/' . $id;
+        $client->request(
+            'DELETE',
+            $url,
+            [],
+            [],
+            ['PHP_AUTH_USER' => 'admin', 'PHP_AUTH_PW' => 'foo']
+        );
+        $this->assertTrue(200 === $client->getResponse()->getStatusCode());
+    }
 
 }
