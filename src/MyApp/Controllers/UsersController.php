@@ -78,7 +78,7 @@ class UsersController implements ControllerProviderInterface
             $user->setPassword($content['password']);
 
             $errors = $app['validator']->validate($user);
-            $phoneChecked = $app['phone.service']->CurlPhoneValidation($content['phonenumber']);
+            $phoneChecked = $app['phone.service']->CurlPhoneValidation($content['phonenumber'], $app['access_key ']);
 
             $errs_msg = [];
             if (count($errors) > 0) {

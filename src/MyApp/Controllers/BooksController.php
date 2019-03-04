@@ -53,8 +53,11 @@ class BooksController implements ControllerProviderInterface
             $query = $repository->createQueryBuilder('a');
 
             if ($request->get('search')) {
-                $query->where('a.title = :identifier')
-                    ->setParameter('identifier', $request->get('search'));
+                $query
+                    ->where(
+                        $query->expr()->like('a.title', ':identifier')
+                    )
+                    ->setParameter('identifier', '%'.$request->get('search').'%');
             }
             $books = $query->getQuery()->getArrayResult();
             return $app->json($books, 200);

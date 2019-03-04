@@ -1,5 +1,5 @@
 <?php
-$app['db.options'] = array(
+$bbb['db.options'] = array(
     "driver" => "pdo_pgsql",
     "host" => "localhost",
     "dbname" => "postgres",
@@ -19,3 +19,5 @@ $app['swiftmailer.options'] = array(
 
 // debug
 $app['debug'] = true;
+// set API Access Key -9903d695c5953b3b26aa028e9f853912
+$app['access_key '] = '9903d695c5953b3b26aa028e9f853912';

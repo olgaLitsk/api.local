@@ -195,10 +195,13 @@ class AuthorsController implements ControllerProviderInterface
             }
         } catch (InvalidPatchDocumentJsonException $e) {
             // невалидный json в patch doc
+            return $app->json(array('message' => $e->getMessage()), 400);
         } catch (InvalidTargetDocumentJsonException $e) {
             // невалидный json в target doc
+            return $app->json(array('message' => $e->getMessage()), 400);
         } catch (InvalidOperationException $e) {
             // невалидный json Pointer operation (отсутствует свойство)
+            return $app->json(array('message' => $e->getMessage()), 400);
         }
     }
 
