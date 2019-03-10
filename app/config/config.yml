@@ -1,0 +1,39 @@
+# app/config/config.yml
+imports:
+- { resource: parameters.yml }
+- { resource: security.yml }
+
+doctrine:
+    dbal:
+        driver:   %driver%
+        host:     %host%
+        dbname:   %name%
+        user:     %user%
+        password: %password%
+
+doctrine_orm:
+        class: MyApp\Providers\DoctrineOrmServiceProvider
+        construct_parameters: ~
+        parameters:
+            # Path to metadata
+            orm.metadata: /src/MyApp/Models/ORM
+            # Database options
+            orm.options:
+                driver:   %driver%
+                host:     %host%
+                dbname:   %name%
+                user:     %user%
+                password: %password%
+swiftmailer:
+    class: Silex\Provider\SwiftmailerServiceProvider
+    parameters:
+        swiftmailer.options:
+            host: %mail.host%
+            port: %mail.port%
+            username: %mail.username%
+            password: %mail.password%
+            encryption: %mail.encryption%
+            auth_mode: %mail.auth_mode%
+            use_spool: %mail.use_spool%
+validator:
+        class: Silex\Provider\ValidatorServiceProvider

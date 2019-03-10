@@ -16,19 +16,19 @@ class BooksController implements ControllerProviderInterface
     public function connect(Application $app)
     {
         $books = $app["controllers_factory"];
-        $books->get("/", "MyApp\\Controllers\\BooksController::showAction");    // вывод списка книг
+        $books->get("/", "MyApp\\Controllers\\BooksController::getBooks");    // вывод списка книг
         $books
-            ->get("/{id}", "MyApp\\Controllers\\BooksController::showActionId")// вывод инф-ии о книге
+            ->get("/{id}", "MyApp\\Controllers\\BooksController::getBook")// вывод инф-ии о книге
             ->assert('id', '\d+');
         $books
-            ->post("/", "MyApp\\Controllers\\BooksController::createAction")// добавление книги
+            ->post("/", "MyApp\\Controllers\\BooksController::postBook")// добавление книги
             ->before(function (Request $request) use ($app) {
                 if (!$app['security.authorization_checker']->isGranted('ROLE_ADMIN', $request->get('id'))) {
                     throw new AccessDeniedException('Access Denied.');
                 }
             });
         $books
-            ->put("/{id}", "MyApp\\Controllers\\BooksController::updateAction")// обновление данных о книге
+            ->put("/{id}", "MyApp\\Controllers\\BooksController::putBook")// обновление данных о книге
             ->before(function (Request $request) use ($app) {
                 if (!$app['security.authorization_checker']->isGranted('ROLE_ADMIN', $request->get('id'))) {
                     throw new AccessDeniedException('Access Denied.');
@@ -36,7 +36,7 @@ class BooksController implements ControllerProviderInterface
             })
             ->assert('id ', '\d+');
         $books
-            ->delete("/{id}", "MyApp\\Controllers\\BooksController::deleteAction")// удаление книги
+            ->delete("/{id}", "MyApp\\Controllers\\BooksController::deleteBook")// удаление книги
             ->before(function (Request $request) use ($app) {
                 if (!$app['security.authorization_checker']->isGranted('ROLE_ADMIN', $request->get('id'))) {
                     throw new AccessDeniedException('Access Denied.');
@@ -46,7 +46,7 @@ class BooksController implements ControllerProviderInterface
         return $books;
     }
 
-    public function showAction(Application $app, Request $request)
+    public function getBooks(Application $app, Request $request)
     {
         try {
             $repository = $app['em']->getRepository('MyApp\Models\ORM\Book');
@@ -66,7 +66,7 @@ class BooksController implements ControllerProviderInterface
         }
     }
 
-    public function showActionId(Application $app, $id)
+    public function getBook(Application $app, $id)
     {
         try {
             $repository = $app['em']->getRepository('MyApp\Models\ORM\Book');
@@ -87,7 +87,7 @@ class BooksController implements ControllerProviderInterface
         }
     }
 
-    public function createAction(Application $app, Request $request)
+    public function postBook(Application $app, Request $request)
     {
         try {
             $content = json_decode($request->getContent(), true);
@@ -134,7 +134,7 @@ class BooksController implements ControllerProviderInterface
         }
     }
 
-    public function updateAction(Application $app, Request $request, $id)
+    public function putBook(Application $app, Request $request, $id)
     {
         try {
             $content = json_decode($request->getContent(), true);
@@ -178,7 +178,7 @@ class BooksController implements ControllerProviderInterface
         }
     }
 
-    public function deleteAction(Application $app, $id)
+    public function deleteBook(Application $app, $id)
     {
         try {
             $book = $app['em']->getRepository('MyApp\Models\ORM\Book')

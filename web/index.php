@@ -1,13 +1,25 @@
 <?php
-// /web/index.php
-//$app = require_once __DIR__.'/../app/app.php';
-require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/../app/bootstrap.php';
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Yaml\Yaml;
 
 $app = new Silex\Application();
-require __DIR__ . '/../app/config/prod.php';
+// Base path
+if (!defined('BASEPATH')) {
+    define('BASEPATH', realpath(__DIR__ . '/../'));
+}
 
+$app['config'] = function () use ($app) {
+    $params = array();
+    $params['base_path'] = BASEPATH;
+    $fileConfig = is_file(BASEPATH . '/env.yml') ? BASEPATH . '/env.yml' : BASEPATH . '/app/config/parameters.yml';
+    $data = Yaml::parse(file_get_contents($fileConfig));
+    foreach ($data['parameters'] as $key => $value) {
+        $params['parameters'][$key] = $value;
+    }
+    return $params;
+};
 $app->get('/', function () {
     return new Response('Welcome to my new Silex app');
 });
@@ -16,15 +28,6 @@ $app->after(function (Request $request, Response $response) {
     $response->headers->set('Content-Type', $contentType);
 });
 
-//Services
-$app->register(new \Silex\Provider\TwigServiceProvider(), array(
-    'twig.path' => __DIR__ . '/../resources/views'
-));
-
-$app->register(new \Silex\Provider\DoctrineServiceProvider(), array(
-    'db.options' => $app['db.options']
-));
-
 $app->register(new Silex\Provider\ValidatorServiceProvider());
 
 $app['phone.service'] = function () {
@@ -32,13 +35,26 @@ $app['phone.service'] = function () {
 };
 
 $app->register(new MyApp\Providers\DoctrineOrmServiceProvider(), array(
-    'db.options' => $app['db.options']
+    'db.options' => array(
+        "driver" => $app['config']['parameters']['driver'],
+        "host" => $app['config']['parameters']['host'],
+        "dbname" => $app['config']['parameters']['dbname'],
+        "user" => $app['config']['parameters']['user'],
+        "port" => $app['config']['parameters']['port'],
+        "password" => $app['config']['parameters']['password'],
+    ),
 ));
 
-$app->register(new Silex\Provider\SwiftmailerServiceProvider(),array(
-    'swiftmailer.options' =>$app['swiftmailer.options'],
-    'swiftmailer.use_spool'=> false
-));
+$app->register(new Silex\Provider\SwiftmailerServiceProvider(), array(
+    'swiftmailer.options' => array(
+        'host' => $app['config']['parameters']['mail.host'],
+        'port' => $app['config']['parameters']['mail.port'],
+        'username' => $app['config']['parameters']['mail.username'],
+        'password' => $app['config']['parameters']['mail.password'],
+        'encryption' => $app['config']['parameters']['mail.encryption'],
+        'auth_mode' => $app['config']['parameters']['mail.auth_mode'],
+        'use_spool' => $app['config']['parameters']['mail.use_spool'],
+    )));
 
 $app->register(new Silex\Provider\SecurityServiceProvider());
 
@@ -52,11 +68,6 @@ $app['security.firewalls'] = array(
             'admin' => array('ROLE_ADMIN', '$2y$10$3i9/lVd8UOFIJ6PAMFt8gu3/r5g0qeCJvoSlLCsvMTythye19F77a'),
         )
     ),
-);
-
-$app['security.access_rules'] = array(
-    array('^/users', 'ROLE_ADMIN'),
-    array('^/authors', 'ROLE_ADMIN'),
 );
 
 $app->mount("/authors", new \MyApp\Controllers\AuthorsController());
@@ -74,3 +85,4 @@ if ('test' === $app['env']) {
 } else {
     $app->run();
 }
+

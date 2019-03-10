@@ -19,19 +19,19 @@ class AuthorsController implements ControllerProviderInterface
     public function connect(Application $app)
     {
         $authors = $app["controllers_factory"];
-        $authors->get("/", "MyApp\\Controllers\\AuthorsController::showAction");    // вывод списка авторов
+        $authors->get("/", "MyApp\\Controllers\\AuthorsController::getAuthors");    // вывод списка авторов
         $authors
-            ->post("/", "MyApp\\Controllers\\AuthorsController::createAction")// добавление нового автора
+            ->post("/", "MyApp\\Controllers\\AuthorsController::postAuthor")// добавление нового автора
             ->before(function () use ($app) {
                 if (!$app['security.authorization_checker']->isGranted('ROLE_ADMIN')) {
                     throw new AccessDeniedException('Access Denied.');
                 }
             });
         $authors
-            ->get("/{id}", "MyApp\\Controllers\\AuthorsController::showActionId")// вывод инф-ии об авторе
+            ->get("/{id}", "MyApp\\Controllers\\AuthorsController::getAuthor")// вывод инф-ии об авторе
             ->assert('id', '\d+');
         $authors
-            ->put("/{id}", "MyApp\\Controllers\\AuthorsController::updateAction")// обновление данных автора
+            ->put("/{id}", "MyApp\\Controllers\\AuthorsController::putAuthor")// обновление данных автора
             ->before(function (Request $request) use ($app) {
                 if (!$app['security.authorization_checker']->isGranted('ROLE_ADMIN', $request->get('id'))) {
                     throw new AccessDeniedException('Access Denied.');
@@ -39,10 +39,10 @@ class AuthorsController implements ControllerProviderInterface
             })
             ->assert('id ', '\d+');
         $authors
-            ->patch("/{id}", "MyApp\\Controllers\\AuthorsController::patchAction")// обновление данных автора
+            ->patch("/{id}", "MyApp\\Controllers\\AuthorsController::patchAuthor")// обновление данных автора
             ->assert('id ', '\d+');
         $authors
-            ->delete("/{id}", "MyApp\\Controllers\\AuthorsController::deleteAction")// удаление автора
+            ->delete("/{id}", "MyApp\\Controllers\\AuthorsController::deleteAuthor")// удаление автора
             ->before(function (Request $request) use ($app) {
                 if (!$app['security.authorization_checker']->isGranted('ROLE_ADMIN', $request->get('id'))) {
                     throw new AccessDeniedException('Access Denied.');
@@ -56,7 +56,7 @@ class AuthorsController implements ControllerProviderInterface
         return $authors;
     }
 
-    public function showAction(Application $app)
+    public function getAuthors(Application $app)
     {
         try {
             $repository = $app['em']->getRepository('MyApp\Models\ORM\Author');
@@ -68,7 +68,7 @@ class AuthorsController implements ControllerProviderInterface
         }
     }
 
-    public function showActionId(Application $app, $id)
+    public function getAuthor(Application $app, $id)
     {
         try {
             $repository = $app['em']->getRepository('MyApp\Models\ORM\Author');
@@ -87,7 +87,7 @@ class AuthorsController implements ControllerProviderInterface
         }
     }
 
-    public function createAction(Application $app, Request $request)
+    public function postAuthor(Application $app, Request $request)
     {
         try {
             $content = [];
@@ -96,7 +96,7 @@ class AuthorsController implements ControllerProviderInterface
                 $content['firstname'] = $crawler->filterXPath('//authors/firstname')->text();
                 $content['lastname'] = $crawler->filterXPath('//authors/lastname')->text();
                 $content['about'] = $crawler->filterXPath('//authors/about')->text();
-            }else{
+            } else {
                 $content = json_decode($request->getContent(), true);
             }
             $author = new Author();
@@ -121,7 +121,7 @@ class AuthorsController implements ControllerProviderInterface
         }
     }
 
-    public function updateAction(Application $app, Request $request, $id)
+    public function putAuthor(Application $app, Request $request, $id)
     {
         try {
             $content = [];
@@ -130,7 +130,7 @@ class AuthorsController implements ControllerProviderInterface
                 $content['firstname'] = $crawler->filterXPath('//authors/firstname')->text();
                 $content['lastname'] = $crawler->filterXPath('//authors/lastname')->text();
                 $content['about'] = $crawler->filterXPath('//authors/about')->text();
-            }else{
+            } else {
                 $content = json_decode($request->getContent(), true);
             }
             $author = $app['em']->getRepository('MyApp\Models\ORM\Author')
@@ -159,7 +159,7 @@ class AuthorsController implements ControllerProviderInterface
         }
     }
 
-    public function patchAction(Application $app, Request $request, $id)
+    public function patchAuthor(Application $app, Request $request, $id)
     {
         try {
             if ($request->getContentType() != 'json') {
@@ -205,7 +205,7 @@ class AuthorsController implements ControllerProviderInterface
         }
     }
 
-    public function deleteAction(Application $app, $id)
+    public function deleteAuthor(Application $app, $id)
     {
         try {
             $author = $app['em']->getRepository('MyApp\Models\ORM\Author')

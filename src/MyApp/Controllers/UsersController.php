@@ -7,32 +7,40 @@ use Silex\Api\ControllerProviderInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 class UsersController implements ControllerProviderInterface
 {
     public function connect(Application $app)
     {
         $users = $app["controllers_factory"];
-        $users->get("/", "MyApp\\Controllers\\UsersController::showAction");// вывод списка покупателей
-        $users->post("/", "MyApp\\Controllers\\UsersController::usersPost");// добавление покупателя
         $users
-            ->get("/{id}", "MyApp\\Controllers\\UsersController::showActionId")// вывод инф-ии о покупателе
+            ->get("/", "MyApp\\Controllers\\UsersController::getCustomers")// вывод списка покупателей
+            ->before(function (Request $request) use ($app) {
+                if (!$app['security.authorization_checker']->isGranted('ROLE_ADMIN')) {
+                    throw new AccessDeniedException('Access Denied.');
+                }
+            });
+        $users
+            ->post("/", "MyApp\\Controllers\\UsersController::postCustomer");// создание покупателя
+        $users
+            ->get("/{id}", "MyApp\\Controllers\\UsersController::getCustomer")// вывод инф-ии о покупателе
             ->assert('id', '\d+');
         $users
-            ->put("/{id}", "MyApp\\Controllers\\UsersController::usersIdPut")// обновление данных покупателя
+            ->put("/{id}", "MyApp\\Controllers\\UsersController::putCustomer")// обновление данных покупателя
             ->assert('id ', '\d+');
         $users
-            ->delete("/{id}", "MyApp\\Controllers\\UsersController::usersIdDelete")// удаление покупателя
+            ->delete("/{id}", "MyApp\\Controllers\\UsersController::deleteCustomer")// удаление покупателя
             ->assert('id ', '\d+ ');
 
         $users
-            ->get("/{id}/orders", "MyApp\\Controllers\\UsersController::usersIdOrdersGet")// вывод заказов покупателя id
+            ->get("/{id}/orders", "MyApp\\Controllers\\UsersController::getOrdersForCustomer")// вывод заказов покупателя id
             ->assert('id ', '\d+ ');
 
         return $users;
     }
 
-    public function showAction(Application $app)
+    public function getCustomers(Application $app)
     {
         try {
             $repository = $app['em']->getRepository('MyApp\Models\ORM\User');
@@ -44,7 +52,7 @@ class UsersController implements ControllerProviderInterface
         }
     }
 
-    public function showActionId(Application $app, $id)
+    public function getCustomer(Application $app, $id)
     {
         try {
             $repository = $app['em']->getRepository('MyApp\Models\ORM\User');
@@ -64,7 +72,7 @@ class UsersController implements ControllerProviderInterface
         }
     }
 
-    public function usersPost(Application $app, Request $request)
+    public function postCustomer(Application $app, Request $request)
     {
         try {
             $content = json_decode($request->getContent(), true);
@@ -78,7 +86,10 @@ class UsersController implements ControllerProviderInterface
             $user->setPassword($content['password']);
 
             $errors = $app['validator']->validate($user);
-            $phoneChecked = $app['phone.service']->CurlPhoneValidation($content['phonenumber'], $app['access_key ']);
+            $phoneChecked = $app['phone.service']->CurlPhoneValidation(
+                $content['phonenumber'],
+                $app['config']['parameters']['access_key']
+            );
 
             $errs_msg = [];
             if (count($errors) > 0) {
@@ -103,7 +114,7 @@ class UsersController implements ControllerProviderInterface
         }
     }
 
-    public function usersIdPut(Application $app, Request $request, $id)
+    public function putCustomer(Application $app, Request $request, $id)
     {
         try {
             $content = json_decode($request->getContent(), true);
@@ -138,7 +149,7 @@ class UsersController implements ControllerProviderInterface
         }
     }
 
-    public function usersIdDelete(Application $app, $id)
+    public function deleteCustomer(Application $app, $id)
     {
         try {
             $sql = "SELECT * FROM users WHERE user_id = ?";
@@ -157,7 +168,7 @@ class UsersController implements ControllerProviderInterface
         return $app->json('user deleted', 200);
     }
 
-//    public function usersIdOrdersGet(Application $app, $id)//фича
+//    public function getOrdersForCustomer(Application $app, $id)//фича
 //    {
 //        $sql = "SELECT * FROM orders
 //                WHERE user=?";

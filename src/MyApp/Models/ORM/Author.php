@@ -76,6 +76,7 @@ class Author
         return $this->about;
     }
 
+
     public function setAbout($about)
     {
         $this->about = $about;

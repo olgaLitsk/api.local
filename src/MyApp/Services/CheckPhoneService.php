@@ -2,8 +2,6 @@
 
 namespace MyApp\Services;
 
-use Silex\Application;
-
 class CheckPhoneService
 {
     public function CurlPhoneValidation($phone, $access_key){

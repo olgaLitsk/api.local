@@ -1,0 +1,7 @@
+# app/config/config_dev.yml
+imports:
+- { resource: config.yml }
+
+web_profiler:
+    toolbar: true
+

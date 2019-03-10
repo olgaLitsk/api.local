@@ -7,6 +7,7 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'Rs\\Json' => array($vendorDir . '/php-jsonpatch/php-jsonpatch/src', $vendorDir . '/php-jsonpointer/php-jsonpointer/src'),
+    'ProxyManager\\' => array($vendorDir . '/ocramius/proxy-manager/src'),
     'Pimple' => array($vendorDir . '/pimple/pimple/src'),
     'Doctrine\\ORM\\' => array($vendorDir . '/doctrine/orm/lib'),
     'Doctrine\\DBAL\\' => array($vendorDir . '/doctrine/dbal/lib'),

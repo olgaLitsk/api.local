@@ -1,9 +1,20 @@
 # app/config/parameters.yml
 parameters:
-    database_driver:    pdo_pgsql
-    database_host:      localhost
-    database_name:      postgres
-    database_user:      postgres
-    database_password:  ""
+    driver:    pdo_pgsql
+    host:      127.0.0.1
+    name:      postgres
+    user:      postgres
+    password:  ""
 
-# ...
+    #--- Email parameters ---
+    mail.host: "smtp.mail.ru"
+    mail.port: "587"
+    mail.username: "litskevich_olga@mail.ru"
+    mail.password: "XXXXXXX"
+    mail.encryption: "TLS"
+    mail.auth_mode: null
+    mail.use_spool: false
+
+    access_key: "9903d695c5953b3b26aa028e9f853912"
+
+    orm.metadata: "/src/MyApp/Models/ORM"

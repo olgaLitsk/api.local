@@ -14,13 +14,13 @@ class OrdersController implements ControllerProviderInterface
     public function connect(Application $app)
     {
         $orders = $app["controllers_factory"];
-        $orders->get("/", "MyApp\\Controllers\\OrdersController::showAction");// вывод списка заказов
-        $orders->post("/", "MyApp\\Controllers\\OrdersController::ordersPost");// создание заказа юзерами
+        $orders->get("/", "MyApp\\Controllers\\OrdersController::getOrders");// вывод списка заказов
+        $orders->post("/", "MyApp\\Controllers\\OrdersController::postOrder");// создание заказа юзерами
         $orders
-            ->get("/{id}", "MyApp\\Controllers\\OrdersController::showActionId")// вывод данных по заказу
+            ->get("/{id}", "MyApp\\Controllers\\OrdersController::getOrder")// вывод данных по заказу
             ->assert('id', '\d+');
         $orders
-            ->put("/{id}", "MyApp\\Controllers\\OrdersController::ordersPut")// обновление данных по заказу
+            ->put("/{id}", "MyApp\\Controllers\\OrdersController::putOrder")// обновление данных по заказу
             ->before(function (Request $request) use ($app) {
                 if (!$app['security.authorization_checker']->isGranted('ROLE_ADMIN', $request->get('id'))) {
                     throw new AccessDeniedException('Access Denied.');
@@ -28,7 +28,7 @@ class OrdersController implements ControllerProviderInterface
             })
             ->assert('id ', '\d+');
         $orders
-            ->delete("/{id}", "MyApp\\Controllers\\OrdersController::ordersDelete")// удаление заказа
+            ->delete("/{id}", "MyApp\\Controllers\\OrdersController::deleteOrder")// удаление заказа
             ->before(function (Request $request) use ($app) {
                 if (!$app['security.authorization_checker']->isGranted('ROLE_ADMIN', $request->get('id'))) {
                     throw new AccessDeniedException('Access Denied.');
@@ -38,7 +38,7 @@ class OrdersController implements ControllerProviderInterface
         return $orders;
     }
 
-    public function showAction(Application $app)
+    public function getOrders(Application $app)
     {
         try {
             $repository = $app['em']->getRepository('MyApp\Models\ORM\Order');
@@ -50,7 +50,7 @@ class OrdersController implements ControllerProviderInterface
         }
     }
 
-    public function showActionId(Application $app, $id)
+    public function getOrder(Application $app, $id)
     {
         try {
             $repository = $app['em']->getRepository('MyApp\Models\ORM\Order');
@@ -71,7 +71,7 @@ class OrdersController implements ControllerProviderInterface
         }
     }
 
-    public function ordersPost(Application $app, Request $request)
+    public function postOrder(Application $app, Request $request)
     {
         $content = json_decode($request->getContent(), true);
 
@@ -117,7 +117,7 @@ class OrdersController implements ControllerProviderInterface
         }
     }
 
-    public function ordersPut(Application $app, Request $request, $id)
+    public function putOrder(Application $app, Request $request, $id)
     {
         try {
             $content = json_decode($request->getContent(), true);
@@ -168,7 +168,7 @@ class OrdersController implements ControllerProviderInterface
         }
     }
 
-    public function ordersDelete(Application $app, $id)
+    public function deleteOrder(Application $app, $id)
     {
         try {
             $author = $app['em']->getRepository('MyApp\Models\ORM\Order')

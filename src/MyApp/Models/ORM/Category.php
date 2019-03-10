@@ -63,7 +63,7 @@ class Category
         $this->name = $name;
     }
 
-    public function addBook(Book $book): self
+    public function addBook(Book $book)
     {
         if (!$this->books->contains($book)) {
             $this->books[] = $book;
@@ -73,7 +73,7 @@ class Category
         return $this;
     }
 
-    public function removeBook(Book $book): self
+    public function removeBook(Book $book)
     {
         if ($this->books->contains($book)) {
             $this->books->removeElement($book);

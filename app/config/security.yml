@@ -1,0 +1,18 @@
+service_providers:
+    security:
+        class: Providers\Security\MySecurityServiceProvider
+        construct_parameters:
+            security.firewalls:
+                user:
+                    anonymous: true
+                    pattern:   ^.*$
+                    http: true
+                    users:
+                        user:
+                        - ROLE_USER
+                        # raw password is foo
+                        - $2y$10$3i9/lVd8UOFIJ6PAMFt8gu3/r5g0qeCJvoSlLCsvMTythye19F77a
+                        admin:
+                        - ROLE_ADMIN
+                        # raw password is foo
+                        - $2y$10$3i9/lVd8UOFIJ6PAMFt8gu3/r5g0qeCJvoSlLCsvMTythye19F77a

@@ -10,25 +10,15 @@ class DoctrineOrmServiceProvider implements ServiceProviderInterface
 {
     public function register(Container $app)
     {
-        $app['em'] = function () {
-            $app['db.options'] = array(
-                "driver" => "pdo_pgsql",
-                "host" => "localhost",
-                "dbname" => "postgres",
-                "user" => "postgres",
-                "port" => "5432",
-                "password" => "",
-            );//$app['db.options']
+        $app['em'] = function () use ($app) {
             $isDevMode = true;
             $isSimpleMode = FALSE;
             $proxyDir = null;
             $cache = null;
             $config = Setup::createAnnotationMetadataConfiguration(
-                array("/src/MyApp/Models/ORM"), $isDevMode, $proxyDir, $cache, $isSimpleMode
+                array($app['config']['parameters']['orm.metadata']), $isDevMode, $proxyDir, $cache, $isSimpleMode
             );
             return EntityManager::create($app['db.options'], $config);
         };
     }
 }
-
-

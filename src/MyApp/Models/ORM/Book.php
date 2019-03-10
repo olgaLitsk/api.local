@@ -58,22 +58,6 @@ class Book
         $this->authors = new ArrayCollection($authors);
     }
 
-//    public function addAuthor(Author $author)
-//    {
-//        if ($this->authors->contains($author)) {
-//            return;
-//        }
-//        $this->authors[] = $author;
-//        $author->addBook($this); // synchronously updating inverse side
-//    }
-//
-//    public function removeAuthor(Author $author)
-//    {
-//        $this->authors->removeElement($author);
-//        // установите владеющую сторону, как null
-//        $author->addBook(null);
-//    }
-
     private $orders;
 
     public function addOrder(Order $order)
