@@ -23,10 +23,10 @@ $app['config'] = function () use ($app) {
 $app->get('/', function () {
     return new Response('Welcome to my new Silex app');
 });
-$app->after(function (Request $request, Response $response) {
-    $contentType = $request->getContentType();
-    $response->headers->set('Content-Type', $contentType);
-});
+//$app->after(function (Request $request, Response $response) {
+//    $contentType = $request->getContentType();
+//    $response->headers->set('Content-Type', $contentType);
+//});
 
 $app->register(new Silex\Provider\ValidatorServiceProvider());
 
